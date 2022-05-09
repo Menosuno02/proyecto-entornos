@@ -31,8 +31,8 @@ public class ProyectoEntornos {
         Scanner sc = new Scanner(System.in);
         sc.useLocale(Locale.ENGLISH);
 
-        String usuario, clave, dni;
-        boolean usuCon;
+        String usuario, clave, dni, correo, nombreApellidos, direccion;
+        boolean usuCon, usuExiste;
         Usuario usuLog = null;
         Vector<Usuario> usuarios;
         int menúInicio;
@@ -42,9 +42,44 @@ public class ProyectoEntornos {
         do {
             switch (menúInicio) {
                 case 1:
-                    System.out.println("Introduce DNI");
-                    dni = sc.nextLine();
-
+                    do {
+                        System.out.println("Introduce DNI");
+                        dni = sc.nextLine();
+                    } while (!dni.matches("[0-9]{8}[A-Z]{1}$"));
+                    do {
+                        usuExiste = false;
+                        System.out.println("Introduce username (nombre usuario)");
+                        usuario = sc.nextLine();
+                        try {
+                            usuarios = bd.listadoUsuarios();
+                        } catch (ErrorBBDD ex) {
+                            System.out.println("Error -> " + ex);
+                            continue;
+                        }
+                        for (Usuario u : usuarios) {
+                            if (u.getNombreUsuario().equalsIgnoreCase(usuario)) {
+                                usuExiste = true;
+                            }
+                        }
+                    } while (usuExiste);
+                    do {
+                        System.out.println("Introduce clave");
+                        clave = sc.nextLine();
+                    } while (clave.length() < 4);
+                    do {
+                        System.out.println("Introduce correo");
+                        correo = sc.nextLine();
+                    } while (!correo.contains("@"));
+                    System.out.println("Introduce nombre y apellidos");
+                    nombreApellidos = sc.nextLine();
+                    System.out.println("Introduce dirección");
+                    direccion = sc.nextLine();
+                    try {
+                        bd.addCliente(new Usuario("a", dni, 'C', usuario, clave, correo, nombreApellidos, direccion, false));
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
                     break;
                 case 2:
                     do {
