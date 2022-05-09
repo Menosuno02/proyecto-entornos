@@ -14,6 +14,19 @@ public class Usuario {
     private String correo;
     private String nombreApellidos;
     private String direccion;
+    private boolean repartidor;
+
+    public Usuario(String idUsuario, String dni, char tipo, String nombreUsuario, String clave, String correo, String nombreApellidos, String direccion, boolean repartidor) {
+        this.idUsuario = idUsuario;
+        this.dni = dni;
+        this.tipo = tipo;
+        this.nombreUsuario = nombreUsuario;
+        this.clave = clave;
+        this.correo = correo;
+        this.nombreApellidos = nombreApellidos;
+        this.direccion = direccion;
+        this.repartidor = repartidor;
+    }
 
     public String getIdUsuario() {
         return idUsuario;
@@ -78,4 +91,9 @@ public class Usuario {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
+
+    public boolean isRepartidor() {
+        return repartidor;
+    }
+
 }
