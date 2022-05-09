@@ -6,14 +6,13 @@ package clases;
  */
 public class Tarjeta {
 
-    private String numTarjeta;
-    private String fechaCaducidad;
+    private int numTarjeta;
     private int ccv;
+    private String fechaCaducidad;
 
-    public Tarjeta(String numTarjeta, String fechaCaducidad, int ccv) {
+    public Tarjeta(int numTarjeta, int ccv, String fechaCaducidad) {
         this.numTarjeta = numTarjeta;
-        this.fechaCaducidad = fechaCaducidad;
         this.ccv = ccv;
+        this.fechaCaducidad = fechaCaducidad;
     }
-
 }
