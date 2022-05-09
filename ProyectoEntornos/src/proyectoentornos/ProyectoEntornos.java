@@ -12,10 +12,9 @@ import java.nio.file.Paths;
 import static java.nio.file.StandardOpenOption.WRITE;
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.regex.*;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -63,9 +62,10 @@ public class ProyectoEntornos {
                         }
                     } while (usuExiste);
                     do {
+                        System.out.println("Clave debe tener entre 6 y 30 caracteres, tener mínimo una mayúscula, una minúscula, un número y un caracter especial y no tener espacios");
                         System.out.println("Introduce clave");
                         clave = sc.nextLine();
-                    } while (clave.length() < 4);
+                    } while (!valClave(clave));
                     do {
                         System.out.println("Introduce correo");
                         correo = sc.nextLine();
@@ -135,6 +135,16 @@ public class ProyectoEntornos {
                     break;
             }
         }
+    }
+
+    public static boolean valClave(String clave) {
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,30}$";
+        Pattern p = Pattern.compile(regex);
+        if (clave == null) {
+            return false;
+        }
+        Matcher m = p.matcher(clave);
+        return m.matches();
     }
 
 }
