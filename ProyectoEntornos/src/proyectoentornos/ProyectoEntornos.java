@@ -2,21 +2,14 @@ package proyectoentornos;
 
 import bbdd.*;
 import clases.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import static java.nio.file.StandardOpenOption.WRITE;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.regex.*;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,7 +18,7 @@ import java.util.logging.Logger;
 public class ProyectoEntornos {
 
     static BD_Restaurante bd = new BD_Restaurante("restaurante");
-    static Usuario usuLog = null;
+    static Cliente usuLog = null;
 
     /**
      * @param args the command line arguments
@@ -79,7 +72,7 @@ public class ProyectoEntornos {
                     nombreApellidos = sc.nextLine();
                     System.out.println("Introduce dirección");
                     direccion = sc.nextLine();
-                    idUsu = "E" + dni.substring(dni.length() - 6, dni.length() - 1);
+                    idUsu = "C" + dni.substring(dni.length() - 6, dni.length() - 1);
                     try {
                         bd.addCliente(new Usuario(idUsu, dni, 'C', usuario, clave, correo, nombreApellidos, direccion, false));
                     } catch (ErrorBBDD ex) {
@@ -103,7 +96,7 @@ public class ProyectoEntornos {
                         for (Usuario u : usuarios) {
                             if (u.getNombreUsuario().equalsIgnoreCase(usuario)) {
                                 if (u.getClave().equalsIgnoreCase(clave)) {
-                                    usuLog = u;
+                                    usuLog = (Cliente) u;
                                     usuCon = true;
                                     break;
                                 } else {
@@ -139,14 +132,16 @@ public class ProyectoEntornos {
                 case 'A':
                     break;
                 default:
-                    System.out.println("Error (tipo inválido)");
                     break;
             }
         }
     }
 
     /**
-     * Método que comprueba si una contraseña: - Tiene entre 6 y 30 caracteres - Posee al menos un número, una minúscula, una mayúscula y un caracter especial - No posee espacios
+     * Método que comprueba si una contraseña: 
+     * - Tiene entre 6 y 30 caracteres 
+     * - Posee al menos un número, una minúscula, una mayúscula y un caracter especial 
+     * - No posee espacios
      *
      * @param clave la contraseña
      * @return true si la contraseña cumple la condición
@@ -166,14 +161,15 @@ public class ProyectoEntornos {
      */
     public static void menuCliente() {
         Scanner sc = new Scanner(System.in);
-        int menuCliente, cantidad, numTarjeta, ccv;
+        int menuCliente, cantidad, numTarjeta = 0, ccv;
+        double importe = 0, importeTotal = 0;
         boolean valProd;
-        String codProducto, fechaExp;
+        String codProducto, fechaExp, codPedido = null;
         Tarjeta tarjeta;
         Vector<Producto> productos = null;
         Vector<String> productosCesta = null;
         do {
-            System.out.println("\n1. Lista productos\n2. Añadir producto a cesta\n3. Quitar producto de cesta\n4. Tramitar pedido\n5. Salir");
+            System.out.println("\n1. Lista productos\n2. Añadir producto a cesta\n3. Quitar producto de cesta\n4. Listar productos cesta\n5. Tramitar pedido\n6. Salir");
             menuCliente = sc.nextInt();
             sc.nextLine();
             try {
@@ -200,7 +196,7 @@ public class ProyectoEntornos {
                             }
                         }
                         try {
-                            productosCesta = bd.getProductosCesta(usuLog.getIdUsuario());
+                            productosCesta = bd.getCodProductosCesta(usuLog.getIdUsuario());
                         } catch (ErrorBBDD ex) {
                             System.out.println("Error -> " + ex);
                             break;
@@ -229,14 +225,19 @@ public class ProyectoEntornos {
                         System.out.println("Introduce código producto");
                         codProducto = sc.nextLine();
                         try {
-                            productosCesta = bd.getProductosCesta(usuLog.getIdUsuario());
+                            productosCesta = bd.getCodProductosCesta(usuLog.getIdUsuario());
                         } catch (ErrorBBDD ex) {
                             System.out.println("Error -> " + ex);
                             break;
                         }
                         for (Producto p : productos) {
                             if (p.getCodProducto().equalsIgnoreCase(codProducto)) {
-                                valProd = false;
+                                valProd = true;
+                            }
+                        }
+                        for (int i = 0; i <= productosCesta.size() - 1; i++) {
+                            if (productosCesta.get(i).equalsIgnoreCase(codProducto)) {
+                                valProd = true;
                             }
                         }
                     } while (!valProd);
@@ -249,6 +250,20 @@ public class ProyectoEntornos {
                     }
                     break;
                 case 4:
+                    Vector<String> cesta = new Vector<String>();
+                    try {
+                        cesta = bd.getProductosCesta(usuLog.getIdUsuario());
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (int i = 0; i <= cesta.size() - 1; i++) {
+                        System.out.println(cesta.get(i));
+                    }
+                    break;
+                case 5:
+                    DateTimeFormatter formato = DateTimeFormatter.ofPattern("MM/yy");
+                    tarjeta = null;
                     try {
                         tarjeta = bd.buscarTarjeta(usuLog.getIdUsuario());
                     } catch (ErrorBBDD ex) {
@@ -256,22 +271,72 @@ public class ProyectoEntornos {
                         break;
                     }
                     if (tarjeta == null) {
-                        System.out.println("El usuario no posee tarjeta");
-                        System.out.println("Introduce num tarjeta (16 números seguidos)");
-                        numTarjeta = sc.nextInt();
-                        System.out.println("Introduce CCV");
-                        ccv = sc.nextInt();
-                        System.out.println("Introduce fecha expiración (MM/YY)");
-                        fechaExp = sc.nextLine();
+                        String numTarjetaS, ccvS;
+                        LocalDate fechaExpLD = null;
+                        boolean valFecha;
+                        do {
+                            System.out.println("El usuario no posee tarjeta");
+                            System.out.println("Introduce num tarjeta (16 números seguidos)");
+                            numTarjetaS = sc.nextLine();
+                        } while (!numTarjetaS.matches("[0-9]{16}$"));
+                        numTarjeta = Integer.parseInt(numTarjetaS);
+                        do {
+                            System.out.println("Introduce CCV (3 números)");
+                            ccvS = sc.nextLine();
+                        } while (!ccvS.matches("[0-9]{3}$"));
+                        ccv = Integer.parseInt(ccvS);
+                        do {
+                            valFecha = false;
+                            try {
+                                System.out.println("Introduce fecha expiración (MM/YY)");
+                                fechaExpLD = LocalDate.parse(sc.nextLine(), formato);
+                                valFecha = true;
+                            } catch (DateTimeParseException dtpex) {
+                                System.out.println("Error -> " + dtpex);
+                            } catch (DateTimeException dtex) {
+                                System.out.println("Error -> " + dtex);
+                            }
+                        } while (!valFecha);
+                        fechaExp = formato.format(fechaExpLD);
+                        tarjeta = new Tarjeta(numTarjeta, ccv, fechaExp);
+                        try {
+                            bd.addTarjeta(usuLog.getIdUsuario(), tarjeta);
+                        } catch (ErrorBBDD ex) {
+                            System.out.println("Error -> " + ex);
+                            break;
+                        }
+                    }
+                    usuLog.setTarjeta(tarjeta);
+                    try {
+                        codPedido = bd.getCodPedido();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                    }
+                    try {
+                        productosCesta = bd.getCodProductosCesta(usuLog.getIdUsuario());
+                        for (int i = 0; i <= productosCesta.size() - 1; i++) {
+                            cantidad = bd.getCantidadCesta(usuLog.getIdUsuario(), productosCesta.get(i));
+                            importe = bd.addProcesoPedido(codPedido, productosCesta.get(i), cantidad);
+                            importeTotal += importe;
+                            bd.quitarProductoCesta(usuLog.getIdUsuario(), productosCesta.get(i));
+                        }
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    try {
+                        bd.addPedido(usuLog.getIdUsuario(), importeTotal, codPedido);
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
                     }
                     break;
-                case 5:
+                case 6:
                     System.out.println("Menú cerrado");
                     break;
                 default:
                     break;
             }
-        } while (menuCliente != 5);
+        } while (menuCliente != 6);
     }
 
 }

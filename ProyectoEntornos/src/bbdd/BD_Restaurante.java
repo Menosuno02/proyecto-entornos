@@ -2,9 +2,9 @@ package bbdd;
 
 import java.sql.*;
 import java.util.*;
-import java.time.*;
 import proyectoentornos.*;
 import clases.*;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -97,7 +97,7 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
-    public Vector<String> getProductosCesta(String idCliente) throws ErrorBBDD {
+    public Vector<String> getCodProductosCesta(String idCliente) throws ErrorBBDD {
         Vector<String> productos = new Vector<String>();
         String sql = "SELECT * FROM productosCesta WHERE idCliente = '" + idCliente + "'";
         try {
@@ -105,7 +105,7 @@ public class BD_Restaurante extends BD_Conector {
             s = c.createStatement();
             reg = s.executeQuery(sql);
             while (reg.next()) {
-                productos.add(reg.getString("idCliente"));
+                productos.add(reg.getString("codProducto"));
             }
             s.close();
             this.cerrar();
@@ -128,7 +128,25 @@ public class BD_Restaurante extends BD_Conector {
             this.cerrar();
             return true;
         } catch (SQLException e) {
-            throw new ErrorBBDD("No se pudo borrar el producto de la cesta ");
+            throw new ErrorBBDD("No se pudo borrar el producto de la cesta");
+        }
+    }
+
+    public Vector<String> getProductosCesta(String idCliente) throws ErrorBBDD {
+        Vector<String> productos = new Vector<String>();
+        String sql = "SELECT * FROM productosCesta WHERE idCliente = '" + idCliente + "'";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                productos.add("Producto " + reg.getString("codProducto") + ", cantidad: " + reg.getInt("cantidad"));
+            }
+            s.close();
+            this.cerrar();
+            return productos;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error listando productos de la cesta");
         }
     }
 
@@ -147,6 +165,146 @@ public class BD_Restaurante extends BD_Conector {
             return tarjeta;
         } catch (SQLException ex) {
             throw new ErrorBBDD("Error buscando tarjeta");
+        }
+    }
+
+    public boolean addTarjeta(String idCliente, Tarjeta t) throws ErrorBBDD {
+        PreparedStatement ps;
+        String sql = "INSERT INTO tarjetas VALUES (?,?,?,?)";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            ps.setInt(1, t.getNumTarjeta());
+            ps.setInt(2, t.getCcv());
+            ps.setString(3, t.getFechaCaducidad());
+            ps.setString(4, idCliente);
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo añadir la tarjeta");
+        }
+    }
+
+    public String getCodPedido() throws ErrorBBDD {
+        int cuenta = 0;
+        String codPedido = "";
+        String sql = "SELECT COUNT(*) AS cuenta FROM pedidos";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                cuenta = reg.getInt("cuenta");
+            }
+            codPedido = "PE" + (cuenta + 1);
+            s.close();
+            this.cerrar();
+            return codPedido;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error creando cod pedido");
+        }
+    }
+
+    public int getCantidadCesta(String idCliente, String codProducto) throws ErrorBBDD {
+        int cantidad = 0;
+        String sql = "SELECT cantidad FROM productosCesta WHERE idCliente = '" + idCliente + "'"
+                + " AND codProducto = '" + codProducto + "'";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                cantidad = reg.getInt("cantidad");
+            }
+            s.close();
+            this.cerrar();
+            return cantidad;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error buscando cantidad");
+        }
+    }
+
+    public double addProcesoPedido(String codPedido, String codProducto, int cantidad) throws ErrorBBDD {
+        PreparedStatement ps;
+        Random r = new Random();
+        int minPrep = 0;
+        double precio = 0;
+        String idEmple;
+        Vector<String> empleados = new Vector<String>();
+        String sql = "SELECT * FROM usuarios WHERE tipo = 'E'";
+        String sql2 = "SELECT * FROM productos WHERE codProducto = '" + codProducto + "'";
+        String sql3 = "INSERT INTO procesosPedido VALUES(?,?,?,?,?)";
+        try {
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                empleados.add(reg.getString("idUsuario"));
+            }
+            idEmple = empleados.get(r.nextInt(empleados.size()));
+            s.close();
+            s = c.createStatement();
+            reg = s.executeQuery(sql2);
+            while (reg.next()) {
+                minPrep = reg.getInt("minPrep");
+                precio = reg.getDouble("precio");
+            }
+            precio = precio * cantidad;
+            s.close();
+            ps = c.prepareStatement(sql3);
+            ps.setString(1, codPedido);
+            ps.setString(2, idEmple);
+            ps.setString(3, codProducto);
+            ps.setDate(4, java.sql.Date.valueOf(LocalDateTime.now().plusMinutes(minPrep).toLocalDate()));
+            ps.setInt(5, cantidad);
+            ps.executeUpdate(sql3);
+            ps.close();
+            this.cerrar();
+            return precio;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error buscando cantidad");
+        }
+    }
+
+    public boolean addPedido(String idCliente, double importeTotal, String codPedido) throws ErrorBBDD {
+        int minPrep = 0;
+        Random r = new Random();
+        Vector<String> repartidores = new Vector<String>();
+        String idRepartidor;
+        String sql = "SELECT * FROM usuarios WHERE repartidor = 1";
+        String sql2 = "SELECT MAX(minPrep) AS max FROM productos WHERE codProducto IN"
+                + " (SELECT codProducto FROM procesosPedido WHERE codPedido = '" + codPedido + "')";
+        String sql3 = "INSERT INTO pedidos VALUES (?,?,?,?,?,?)";
+        PreparedStatement ps;
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                minPrep = reg.getInt("max");
+            }
+            s.close();
+            s = c.createStatement();
+            reg = s.executeQuery(sql2);
+            while (reg.next()) {
+                repartidores.add(reg.getString("idUsuario"));
+            }
+            idRepartidor = repartidores.get(r.nextInt(repartidores.size()));
+            s.close();
+            ps = c.prepareStatement(sql3);
+            ps.setString(1, codPedido);
+            ps.setString(2, idCliente);
+            ps.setString(3, idRepartidor);
+            ps.setDate(4, java.sql.Date.valueOf(LocalDateTime.now().toLocalDate()));
+            ps.setDate(5, java.sql.Date.valueOf(LocalDateTime.now().plusMinutes(minPrep).toLocalDate()));
+            ps.setDouble(6, importeTotal);
+            ps.executeUpdate(sql3);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo añadir el pedido");
         }
     }
 }

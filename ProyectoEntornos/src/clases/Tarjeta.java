@@ -15,4 +15,17 @@ public class Tarjeta {
         this.ccv = ccv;
         this.fechaCaducidad = fechaCaducidad;
     }
+
+    public int getNumTarjeta() {
+        return numTarjeta;
+    }
+
+    public int getCcv() {
+        return ccv;
+    }
+
+    public String getFechaCaducidad() {
+        return fechaCaducidad;
+    }
+
 }
