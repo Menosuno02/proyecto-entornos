@@ -10,8 +10,6 @@ import java.util.Locale;
 import java.util.regex.*;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -133,6 +131,7 @@ public class ProyectoEntornos {
                     menuCliente();
                     break;
                 case 'E':
+                    
                     break;
                 case 'G':
                     break;
@@ -145,9 +144,9 @@ public class ProyectoEntornos {
     }
 
     /**
-     * Método que comprueba si una contraseña: 
-     * - Tiene entre 6 y 30 caracteres 
-     * - Posee al menos un número, una minúscula, una mayúscula y un caracter especial 
+     * Método que comprueba si una contraseña:
+     * - Tiene entre 6 y 30 caracteres
+     * - Posee al menos un número, una minúscula, una mayúscula y un caracter especial
      * - No posee espacios
      *
      * @param clave la contraseña

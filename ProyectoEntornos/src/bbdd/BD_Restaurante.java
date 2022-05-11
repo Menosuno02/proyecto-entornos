@@ -16,8 +16,8 @@ public class BD_Restaurante extends BD_Conector {
     private static ResultSet reg;
 
     /**
-     * 
-     * @param file 
+     *
+     * @param file
      */
     public BD_Restaurante(String file) {
         super(file);
@@ -63,7 +63,7 @@ public class BD_Restaurante extends BD_Conector {
 
     public boolean addCliente(Usuario u) throws ErrorBBDD {
         PreparedStatement ps;
-        String sql = "INSERT INTO tarjetas VALUES(?,?,'C',?,?,?,?,?,0)";
+        String sql = "INSERT INTO usuarios VALUES(?,?,'C',?,?,?,?,?,0)";
         try {
             this.abrir();
             ps = c.prepareStatement(sql);
@@ -324,7 +324,7 @@ public class BD_Restaurante extends BD_Conector {
             ps.setString(2, idCliente);
             ps.setString(3, idRepartidor);
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(LocalDateTime.now()));
-            ps.setTimestamp(5, java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(minPrep + r.nextInt(11))));
+            ps.setTimestamp(5, java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(minPrep + r.nextInt(21))));
             ps.setDouble(6, importeTotal);
             ps.executeUpdate(sql3);
             ps.close();
