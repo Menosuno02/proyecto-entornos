@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.regex.*;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -72,7 +74,12 @@ public class ProyectoEntornos {
                     nombreApellidos = sc.nextLine();
                     System.out.println("Introduce dirección");
                     direccion = sc.nextLine();
-                    idUsu = "C" + dni.substring(dni.length() - 6, dni.length() - 1);
+                    try {
+                        idUsu = bd.getCodUsu("C");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
                     try {
                         bd.addCliente(new Usuario(idUsu, dni, 'C', usuario, clave, correo, nombreApellidos, direccion, false));
                     } catch (ErrorBBDD ex) {

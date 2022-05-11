@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 10-05-2022 a las 12:09:46
+-- Tiempo de generación: 11-05-2022 a las 09:48:41
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 8.1.4
 
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `modProductos` (
   `idUsuario` varchar(7) NOT NULL COMMENT 'ID del usuario que realiza la modificación',
   `codProducto` varchar(7) NOT NULL COMMENT 'Código del producto modificado',
-  `fecha` datetime NOT NULL COMMENT 'Fecha y hora de la modificación',
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Fecha y hora de la modificación',
   `accion` varchar(100) NOT NULL COMMENT 'Modificación realizada',
   `descripcion` varchar(100) DEFAULT NULL COMMENT 'Descripción de la modificación'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -39,8 +39,8 @@ CREATE TABLE `pedidos` (
   `codPedido` varchar(7) NOT NULL COMMENT 'Código del pedido (formato: P1, P21, P321, etc.)',
   `idCliente` varchar(7) NOT NULL COMMENT 'ID del cliente que ha realizado el pedido',
   `idRepartidor` varchar(7) NOT NULL COMMENT 'ID del repartidor que ha realizado la entrega del pedido',
-  `fechaAlta` datetime NOT NULL COMMENT 'Fecha y hora a la que el pedido fue tramitado por el cliente',
-  `fechaEntrega` datetime NOT NULL COMMENT 'Fecha y hora a la que el pedido fue entregado al cliente',
+  `fechaAlta` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Fecha y hora a la que el pedido fue tramitado por el cliente',
+  `fechaEntrega` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Fecha y hora a la que el pedido fue entregado al cliente',
   `precio` double NOT NULL COMMENT 'Importe total del pedido'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -54,7 +54,7 @@ CREATE TABLE `procesosPedido` (
   `codPedido` varchar(7) NOT NULL COMMENT 'Código del pedido',
   `idEmple` varchar(7) NOT NULL COMMENT 'ID del empleado que preparó el producto',
   `codProducto` varchar(7) NOT NULL COMMENT 'Código del producto (del pedido)',
-  `fechaPrep` datetime NOT NULL COMMENT 'Fecha y hora de preparación del producto',
+  `fechaPrep` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Fecha y hora de preparación del producto',
   `cantidad` int(11) NOT NULL COMMENT 'Cantidad del producto'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -105,7 +105,7 @@ CREATE TABLE `tarjetas` (
 --
 
 CREATE TABLE `usuarios` (
-  `idUsuario` varchar(7) NOT NULL COMMENT 'ID del usuario (formato: C70356Y, E91220P)',
+  `idUsuario` varchar(7) NOT NULL COMMENT 'ID del usuario (formato: G1, E21, C321)',
   `dni` varchar(9) NOT NULL COMMENT 'DNI del usuario',
   `tipo` char(1) NOT NULL COMMENT 'Tipo de usuario (C/E/G/A)',
   `nombreUsuario` varchar(30) NOT NULL COMMENT 'Nombre del usuario (username)',
@@ -124,7 +124,7 @@ CREATE TABLE `usuarios` (
 -- Indices de la tabla `modProductos`
 --
 ALTER TABLE `modProductos`
-  ADD PRIMARY KEY (`idUsuario`,`codProducto`,`fecha`);
+  ADD PRIMARY KEY (`codProducto`,`fecha`);
 
 --
 -- Indices de la tabla `pedidos`
