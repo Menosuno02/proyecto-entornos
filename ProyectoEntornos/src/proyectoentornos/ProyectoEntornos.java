@@ -79,7 +79,7 @@ public class ProyectoEntornos {
                         break;
                     }
                     try {
-                        bd.addCliente(new Usuario(idUsu, dni, 'C', usuario, clave, correo, nombreApellidos, direccion, false));
+                        bd.addUsuario(new Usuario(idUsu, dni, 'C', usuario, clave, correo, nombreApellidos, direccion));
                     } catch (ErrorBBDD ex) {
                         System.out.println("Error -> " + ex);
                         break;

@@ -31,7 +31,11 @@ public class BD_Restaurante extends BD_Conector {
             s = c.createStatement();
             reg = s.executeQuery(sql);
             while (reg.next()) {
-                usuarios.add(new Usuario(reg.getString("idUsuario"), reg.getString("dni"), reg.getString("tipo").charAt(0), reg.getString("nombreUsuario"), reg.getString("clave"), reg.getString("correo"), reg.getString("nombreApellidos"), reg.getString("direccion"), reg.getBoolean("repartidor")));
+                if (reg.getString("tipo").charAt(0) != 'E') {
+                    usuarios.add(new Usuario(reg.getString("idUsuario"), reg.getString("dni"), reg.getString("tipo").charAt(0), reg.getString("nombreUsuario"), reg.getString("clave"), reg.getString("correo"), reg.getString("nombreApellidos"), reg.getString("direccion")));
+                } else {
+                    usuarios.add(new Empleado(reg.getString("idUsuario"), reg.getString("dni"), reg.getString("tipo").charAt(0), reg.getString("nombreUsuario"), reg.getString("clave"), reg.getString("correo"), reg.getString("nombreApellidos"), reg.getString("direccion"), reg.getBoolean("repartidor")));
+                }
             }
             s.close();
             this.cerrar();
@@ -61,9 +65,9 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
-    public boolean addCliente(Usuario u) throws ErrorBBDD {
+    public boolean addUsuario(Usuario u) throws ErrorBBDD {
         PreparedStatement ps;
-        String sql = "INSERT INTO usuarios VALUES(?,?,'C',?,?,?,?,?,0)";
+        String sql = "INSERT INTO usuarios VALUES(?,?,?,?,?,?,?,?,?)";
         try {
             this.abrir();
             ps = c.prepareStatement(sql);
@@ -75,7 +79,11 @@ public class BD_Restaurante extends BD_Conector {
             ps.setString(6, u.getCorreo());
             ps.setString(7, u.getNombreApellidos());
             ps.setString(8, u.getDireccion());
-            ps.setInt(9, u.isRepartidor() ? 1 : 0);
+            if (u instanceof Empleado) {
+                ps.setInt(9, ((Empleado) u).isRepartidor() ? 1 : 0);
+            } else {
+                ps.setInt(9, 0);
+            }
             ps.executeUpdate(sql);
             ps.close();
             this.cerrar();

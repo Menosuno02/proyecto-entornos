@@ -14,9 +14,8 @@ public class Usuario {
     private String correo;
     private String nombreApellidos;
     private String direccion;
-    private boolean repartidor;
 
-    public Usuario(String idUsuario, String dni, char tipo, String nombreUsuario, String clave, String correo, String nombreApellidos, String direccion, boolean repartidor) {
+    public Usuario(String idUsuario, String dni, char tipo, String nombreUsuario, String clave, String correo, String nombreApellidos, String direccion) {
         this.idUsuario = idUsuario;
         this.dni = dni;
         this.tipo = tipo;
@@ -25,7 +24,6 @@ public class Usuario {
         this.correo = correo;
         this.nombreApellidos = nombreApellidos;
         this.direccion = direccion;
-        this.repartidor = repartidor;
     }
 
     public String getIdUsuario() {
@@ -92,8 +90,9 @@ public class Usuario {
         this.direccion = direccion;
     }
 
-    public boolean isRepartidor() {
-        return repartidor;
+    @Override
+    public String toString() {
+        return "Usuario{" + "idUsuario=" + idUsuario + ", dni=" + dni + ", tipo=" + tipo + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", correo=" + correo + ", nombreApellidos=" + nombreApellidos + ", direccion=" + direccion + '}';
     }
 
 }
