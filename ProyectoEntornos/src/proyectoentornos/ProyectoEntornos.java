@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.regex.*;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -131,11 +133,12 @@ public class ProyectoEntornos {
                     menuCliente();
                     break;
                 case 'E':
-                    
+                    menuEmple();
                     break;
                 case 'G':
-                    break;
+                    menuGestor();
                 case 'A':
+                    menuAdmin();
                     break;
                 default:
                     break;
@@ -172,8 +175,8 @@ public class ProyectoEntornos {
         boolean valProd;
         String codProducto, fechaExp, codPedido = null;
         Tarjeta tarjeta;
-        Vector<Producto> productos = null;
-        Vector<String> productosCesta = null;
+        Vector<Producto> productos = new Vector<Producto>();
+        Vector<String> productosCesta = new Vector<String>();
         do {
             System.out.println("\n1. Lista productos\n2. Añadir producto a cesta\n3. Quitar producto de cesta\n4. Listar productos cesta\n5. Tramitar pedido\n6. Salir");
             menuCliente = sc.nextInt();
@@ -345,4 +348,190 @@ public class ProyectoEntornos {
         } while (menuCliente != 6);
     }
 
+
+
+    /**
+     * Menú de los empleados
+     */
+    public static void menuEmple() {
+        Scanner sc = new Scanner(System.in);
+        int menuEmple;
+        Vector<Producto> productos = new Vector<Producto>();
+        Vector<ProcesoPedido> procesos = new Vector<ProcesoPedido>();
+        Vector<Pedido> pedidos = new Vector<Pedido>();
+        do {
+            System.out.println("\n1. Lista productos\n2. Lista procesos pedidos\n3. Lista pedidos\n4. Salir");
+            menuEmple = sc.nextInt();
+            sc.nextLine();
+            switch (menuEmple) {
+                case 1:
+                    try {
+                        productos = bd.listadoProductos();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (Producto p : productos) {
+                        p.toString();
+                    }
+                    break;
+                case 2:
+                    try {
+                        procesos = bd.listadoProcesosPedidos();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (ProcesoPedido pp : procesos) {
+                        pp.toString();
+                    }
+                    break;
+                case 3:
+                    try {
+                        pedidos = bd.listadoPedidos();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (Pedido p : pedidos) {
+                        p.toString();
+                    }
+                    break;
+                case 4:
+                    System.out.println("Menú cerrado");
+                    break;
+                default:
+                    break;
+            }
+        } while (menuEmple != 4);
+    }
+
+
+
+    /**
+     * Menú de los gestores
+     */
+    public static void menuGestor() {
+        Scanner sc = new Scanner(System.in);
+        sc.useLocale(Locale.ENGLISH);
+        int menuGestor, minPrep;
+        double precio;
+        String nomProducto, ingrediente, ingredientes, alergeno, alergenos, codProdMod;
+        Vector<Producto> productos = new Vector<Producto>();
+        do {
+            System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir empleado\n5. Modificar empleado\n6. Borrar empleado\n7. Salir");
+            menuGestor = sc.nextInt();
+            sc.nextLine();
+            switch (menuGestor) {
+                case 1:
+                    ingredientes = "";
+                    System.out.println("Introduce nombre producto");
+                    nomProducto = sc.nextLine();
+                    do {
+                        System.out.println("Introduce ingrediente (STOP para parar)");
+                        ingrediente = sc.nextLine();
+                        if (ingrediente.equalsIgnoreCase("STOP")) {
+                            break;
+                        } else if (ingrediente.length() + ingredientes.length() > 200) {
+                            System.out.println("No se pudo añadir ingrediente (supera límite de caracteres)");
+                        } else if (ingredientes.length() == 0) {
+                            ingredientes = ingrediente;
+                        } else {
+                            ingredientes = ingredientes + ingrediente;
+                        }
+                    } while (!ingrediente.equalsIgnoreCase("STOP"));
+                    do {
+                        alergenos = "";
+                        System.out.println("Introduce alérgeno (STOP para parar)");
+                        alergeno = sc.nextLine();
+                        if (alergeno.equalsIgnoreCase("STOP")) {
+                            break;
+                        } else if (alergeno.length() + alergenos.length() > 200) {
+                            System.out.println("No se pudo añadir alergeno (supera límite de caracteres)");
+                        } else if (alergenos.length() == 0) {
+                            alergenos = alergeno;
+                        } else {
+                            alergenos = alergenos + alergeno;
+                        }
+                    } while (!alergeno.equalsIgnoreCase("STOP"));
+                    do {
+                        System.out.println("Introduce precio");
+                        precio = sc.nextDouble();
+                    } while (precio < 0.01 || precio > 99.99);
+                    do {
+                        System.out.println("Introduce minutos de preparación");
+                        minPrep = sc.nextInt();
+                    } while (minPrep < 1 || minPrep > 90);
+                    try {
+                        String codProd = bd.getCodProducto();
+                        bd.addProducto(new Producto(codProd, nomProducto, ingredientes, alergenos, precio, minPrep));
+                        System.out.println("Producto añadido");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    break;
+                case 2:
+                    try {
+                        productos = bd.listadoProductos();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (Producto p : productos) {
+                        System.out.println(p.toString());
+                    }
+                    System.out.println("Introduce código del producto a modificar");
+                    codProdMod = sc.nextLine();
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    System.out.println("Menú cerrado");
+                    break;
+                default:
+                    break;
+            }
+        } while (menuGestor != 7);
+    }
+
+
+
+    /**
+     * Menú de los administradores
+     */
+    public static void menuAdmin() {
+        Scanner sc = new Scanner(System.in);
+        int menuAdmin;
+        do {
+            System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir usuario\n5. Modificar usuario\n6. Borrar usuario\n7. Salir");
+            menuAdmin = sc.nextInt();
+            sc.nextLine();
+            switch (menuAdmin) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    System.out.println("Menú cerrado");
+                    break;
+                default:
+                    break;
+            }
+        } while (menuAdmin != 7);
+    }
 }

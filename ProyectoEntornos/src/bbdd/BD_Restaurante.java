@@ -230,7 +230,7 @@ public class BD_Restaurante extends BD_Conector {
             while (reg.next()) {
                 cuenta = reg.getInt("cuenta");
             }
-            codPedido = "PE" + (cuenta + 1);
+            codPedido = "P" + Integer.toString(cuenta + 1);
             s.close();
             this.cerrar();
             return codPedido;
@@ -340,6 +340,83 @@ public class BD_Restaurante extends BD_Conector {
             return true;
         } catch (SQLException e) {
             throw new ErrorBBDD("No se pudo añadir el pedido");
+        }
+    }
+    
+    public Vector<ProcesoPedido> listadoProcesosPedidos() throws ErrorBBDD {
+        Vector<ProcesoPedido> procesos = new Vector<ProcesoPedido>();
+        String sql = "SELECT * FROM procesosPedidos";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                procesos.add(new ProcesoPedido(reg.getString("codPedido"), reg.getString("idEmple"), reg.getString("codProducto"), reg.getTimestamp("fechaPrep").toLocalDateTime(), reg.getInt("cantidad")));
+            }
+            s.close();
+            this.cerrar();
+            return procesos;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error listando procesos");
+        }
+    }
+    
+    public Vector<Pedido> listadoPedidos() throws ErrorBBDD {
+        Vector<Pedido> pedidos = new Vector<Pedido>();
+        String sql = "SELECT * FROM pedidos";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                pedidos.add(new Pedido(reg.getString("codPedido"), reg.getString("idCliente"), reg.getString("idRepartidor"), reg.getTimestamp("fechaAlta").toLocalDateTime(), reg.getTimestamp("fechaEntrega").toLocalDateTime(), reg.getDouble("precio")));
+            }
+            s.close();
+            this.cerrar();
+            return pedidos;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error listando pedidos");
+        }
+    }
+    
+    public String getCodProducto() throws ErrorBBDD {
+        int cuenta = 0;
+        String codProducto = "";
+        String sql = "SELECT COUNT(*) AS cuenta FROM productos";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                cuenta = reg.getInt("cuenta");
+            }
+            codProducto = "PRO" + Integer.toString(cuenta + 1);
+            s.close();
+            this.cerrar();
+            return codProducto;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error creando cod producto");
+        }
+    }
+    
+    public boolean addProducto(Producto p) throws ErrorBBDD {
+        PreparedStatement ps;
+        String sql = "INSERT INTO productos VALUES(?,?,?,?,?,?)";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            ps.setString(1, p.getCodProducto());
+            ps.setString(2, p.getNomProducto());
+            ps.setString(3, p.getIngredientes());
+            ps.setString(4, p.getAlergenos());
+            ps.setDouble(5, p.getPrecio());
+            ps.setInt(6, p.getMinPrep());
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo dar de alta del producto");
         }
     }
 }
