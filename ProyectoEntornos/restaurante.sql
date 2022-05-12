@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 11-05-2022 a las 09:48:41
+-- Tiempo de generación: 12-05-2022 a las 12:26:08
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 8.1.4
 
@@ -92,7 +92,7 @@ CREATE TABLE `productosCesta` (
 --
 
 CREATE TABLE `tarjetas` (
-  `numTarjeta` int(16) NOT NULL COMMENT 'Número de la tarjeta',
+  `numTarjeta` varchar(16) NOT NULL COMMENT 'Número de la tarjeta',
   `ccv` int(3) NOT NULL COMMENT 'CCV de la tarjeta',
   `fechaExpira` varchar(5) NOT NULL COMMENT 'Fecha de vencimiento de la tarjeta (MM/YY)',
   `idCliente` varchar(7) NOT NULL COMMENT 'ID del propietario de la tarjeta'
@@ -113,7 +113,7 @@ CREATE TABLE `usuarios` (
   `correo` varchar(50) NOT NULL COMMENT 'Correo electrónico del usuario',
   `nombreApellidos` varchar(50) NOT NULL COMMENT 'Nombre y apellidos del usuario',
   `direccion` varchar(50) NOT NULL COMMENT 'Dirección del usuario',
-  `repartidor` tinyint(1) DEFAULT NULL COMMENT '0 si el usuario no es empleado o si el empleado no puede ejercer de repartidor y 1 si el empleado puede ejercer de repartidor'
+  `repartidor` tinyint(1) NOT NULL COMMENT '0 si el usuario no es empleado o si el empleado no puede ejercer de repartidor y 1 si el empleado puede ejercer de repartidor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -171,12 +171,6 @@ ALTER TABLE `usuarios`
 --
 -- Restricciones para tablas volcadas
 --
-
---
--- Filtros para la tabla `procesosPedido`
---
-ALTER TABLE `procesosPedido`
-  ADD CONSTRAINT `FK_PROCESO_PEDIDO` FOREIGN KEY (`codPedido`) REFERENCES `pedidos` (`codPedido`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `productosCesta`

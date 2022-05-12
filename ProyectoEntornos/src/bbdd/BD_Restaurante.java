@@ -89,7 +89,7 @@ public class BD_Restaurante extends BD_Conector {
             this.cerrar();
             return true;
         } catch (SQLException e) {
-            throw new ErrorBBDD("No se pudo dar de alta del cliente");
+            throw new ErrorBBDD("No se pudo dar de alta del usuario");
         }
     }
 
@@ -190,7 +190,7 @@ public class BD_Restaurante extends BD_Conector {
             s = c.createStatement();
             reg = s.executeQuery(sql);
             while (reg.next()) {
-                tarjeta = new Tarjeta(reg.getInt("numTarjeta"), reg.getInt("ccv"), reg.getString("fechaExpira"));
+                tarjeta = new Tarjeta(reg.getString("numTarjeta"), reg.getInt("ccv"), reg.getString("fechaExpira"));
             }
             s.close();
             this.cerrar();
@@ -206,7 +206,7 @@ public class BD_Restaurante extends BD_Conector {
         try {
             this.abrir();
             ps = c.prepareStatement(sql);
-            ps.setInt(1, t.getNumTarjeta());
+            ps.setString(1, t.getNumTarjeta());
             ps.setInt(2, t.getCcv());
             ps.setString(3, t.getFechaCaducidad());
             ps.setString(4, idCliente);
@@ -342,7 +342,7 @@ public class BD_Restaurante extends BD_Conector {
             throw new ErrorBBDD("No se pudo añadir el pedido");
         }
     }
-    
+
     public Vector<ProcesoPedido> listadoProcesosPedidos() throws ErrorBBDD {
         Vector<ProcesoPedido> procesos = new Vector<ProcesoPedido>();
         String sql = "SELECT * FROM procesosPedidos";
@@ -360,7 +360,7 @@ public class BD_Restaurante extends BD_Conector {
             throw new ErrorBBDD("Error listando procesos");
         }
     }
-    
+
     public Vector<Pedido> listadoPedidos() throws ErrorBBDD {
         Vector<Pedido> pedidos = new Vector<Pedido>();
         String sql = "SELECT * FROM pedidos";
@@ -378,7 +378,7 @@ public class BD_Restaurante extends BD_Conector {
             throw new ErrorBBDD("Error listando pedidos");
         }
     }
-    
+
     public String getCodProducto() throws ErrorBBDD {
         int cuenta = 0;
         String codProducto = "";
@@ -398,7 +398,7 @@ public class BD_Restaurante extends BD_Conector {
             throw new ErrorBBDD("Error creando cod producto");
         }
     }
-    
+
     public boolean addProducto(Producto p) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO productos VALUES(?,?,?,?,?,?)";
@@ -417,6 +417,88 @@ public class BD_Restaurante extends BD_Conector {
             return true;
         } catch (SQLException e) {
             throw new ErrorBBDD("No se pudo dar de alta del producto");
+        }
+    }
+
+    public boolean addModProducto(String idUsuario, String codProducto, String accion, String descripcion) throws ErrorBBDD {
+        PreparedStatement ps;
+        String sql = "INSERT INTO modProductos VALUES(?,?,?,?,?)";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            ps.setString(1, idUsuario);
+            ps.setString(2, codProducto);
+            ps.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+            ps.setString(4, accion);
+            ps.setString(5, descripcion);
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo dar de alta la modificación del producto");
+        }
+    }
+
+    public boolean modProducto(String codProducto, String atributo, String valor) throws ErrorBBDD {
+        int nuevoMinPrep = 0;
+        double nuevoPrecio = 0;
+        PreparedStatement ps;
+        if (atributo.equals("precio")) {
+            nuevoPrecio = Double.parseDouble(valor);
+        } else if (atributo.equals("minPrep")) {
+            nuevoMinPrep = Integer.parseInt(valor);
+        }
+        String sql = "UPDATE productos SET " + atributo + " = ? WHERE codProducto = ?";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            if (atributo.equals("precio")) {
+                ps.setDouble(1, nuevoPrecio);
+            } else if (atributo.equals("minPrep")) {
+                ps.setInt(1, nuevoMinPrep);
+            } else {
+                ps.setString(1, valor);
+            }
+            ps.setString(2, codProducto);
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo modificar el producto");
+        }
+    }
+
+    public boolean deleteProducto(String codProducto) throws ErrorBBDD {
+        PreparedStatement ps;
+        String sql = "DELETE productos WHERE codProducto = ?";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            ps.setString(1, codProducto);
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo borrar el producto");
+        }
+    }
+    
+    public boolean deleteUsuario(String idUsu) throws ErrorBBDD {
+        PreparedStatement ps;
+        String sql = "DELETE usuarios where idUsuario = ?";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            ps.setString(1, idUsu);
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo borrar el usuario");
         }
     }
 }

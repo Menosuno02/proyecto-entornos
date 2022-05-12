@@ -30,7 +30,7 @@ public class ProyectoEntornos {
         Scanner sc = new Scanner(System.in);
         sc.useLocale(Locale.ENGLISH);
 
-        String usuario, clave, dni, correo, nombreApellidos, direccion, idUsu;
+        String username, clave, dni, correo, nombreApellidos, direccion, idUsu, tipo = null;
         boolean usuCon, usuExiste;
         Vector<Usuario> usuarios;
         int menúInicio;
@@ -47,7 +47,7 @@ public class ProyectoEntornos {
                     do {
                         usuExiste = false;
                         System.out.println("Introduce username (nombre usuario)");
-                        usuario = sc.nextLine();
+                        username = sc.nextLine();
                         try {
                             usuarios = bd.listadoUsuarios();
                         } catch (ErrorBBDD ex) {
@@ -55,7 +55,7 @@ public class ProyectoEntornos {
                             continue;
                         }
                         for (Usuario u : usuarios) {
-                            if (u.getNombreUsuario().equalsIgnoreCase(usuario)) {
+                            if (u.getNombreUsuario().equalsIgnoreCase(username)) {
                                 usuExiste = true;
                                 break;
                             }
@@ -70,18 +70,29 @@ public class ProyectoEntornos {
                         System.out.println("Introduce correo");
                         correo = sc.nextLine();
                     } while (!correo.contains("@"));
-                    System.out.println("Introduce nombre y apellidos");
-                    nombreApellidos = sc.nextLine();
-                    System.out.println("Introduce dirección");
-                    direccion = sc.nextLine();
+                    do {
+                        System.out.println("Introduce nombre y apellidos");
+                        nombreApellidos = sc.nextLine();
+                    } while (nombreApellidos.length() < 1 || nombreApellidos.length() > 50);
+                    do {
+                        System.out.println("Introduce dirección");
+                        direccion = sc.nextLine();
+                    } while (direccion.length() < 1 || direccion.length() > 50);
+                    if (usuLog == null) {
+                        tipo = "C";
+                    } else if (usuLog.getTipo() == 'G') {
+                        tipo = "E";
+                    } else if (usuLog.getTipo() == 'A') {
+                        tipo = "G";
+                    }
                     try {
-                        idUsu = bd.getCodUsu("C");
+                        idUsu = bd.getCodUsu(tipo);
                     } catch (ErrorBBDD ex) {
                         System.out.println("Error -> " + ex);
                         break;
                     }
                     try {
-                        bd.addUsuario(new Usuario(idUsu, dni, 'C', usuario, clave, correo, nombreApellidos, direccion));
+                        bd.addUsuario(new Usuario(idUsu, dni, tipo.charAt(0), username, clave, correo, nombreApellidos, direccion));
                     } catch (ErrorBBDD ex) {
                         System.out.println("Error -> " + ex);
                         break;
@@ -90,8 +101,8 @@ public class ProyectoEntornos {
                 case 2:
                     do {
                         usuCon = false;
-                        System.out.println("Introduce nombre usuario");
-                        usuario = sc.nextLine();
+                        System.out.println("Introduce nombre usuario (username)");
+                        username = sc.nextLine();
                         System.out.println("Introduce contraseña");
                         clave = sc.nextLine();
                         try {
@@ -101,7 +112,7 @@ public class ProyectoEntornos {
                             continue;
                         }
                         for (Usuario u : usuarios) {
-                            if (u.getNombreUsuario().equalsIgnoreCase(usuario)) {
+                            if (u.getNombreUsuario().equalsIgnoreCase(username)) {
                                 if (u.getClave().equalsIgnoreCase(clave)) {
                                     usuLog = (Cliente) u;
                                     usuCon = true;
@@ -170,10 +181,10 @@ public class ProyectoEntornos {
      */
     public static void menuCliente() {
         Scanner sc = new Scanner(System.in);
-        int menuCliente, cantidad, numTarjeta = 0, ccv;
+        int menuCliente, cantidad, ccv;
         double importe = 0, importeTotal = 0;
         boolean valProd;
-        String codProducto, fechaExp, codPedido = null;
+        String codProducto, numTarjeta, fechaExp, codPedido = null;
         Tarjeta tarjeta;
         Vector<Producto> productos = new Vector<Producto>();
         Vector<String> productosCesta = new Vector<String>();
@@ -280,15 +291,14 @@ public class ProyectoEntornos {
                         break;
                     }
                     if (tarjeta == null) {
-                        String numTarjetaS, ccvS;
+                        String ccvS;
                         LocalDate fechaExpLD = null;
                         boolean valFecha;
                         do {
                             System.out.println("El usuario no posee tarjeta");
                             System.out.println("Introduce num tarjeta (16 números seguidos)");
-                            numTarjetaS = sc.nextLine();
-                        } while (!numTarjetaS.matches("[0-9]{16}$"));
-                        numTarjeta = Integer.parseInt(numTarjetaS);
+                            numTarjeta = sc.nextLine();
+                        } while (!numTarjeta.matches("[0-9]{16}$"));
                         do {
                             System.out.println("Introduce CCV (3 números)");
                             ccvS = sc.nextLine();
@@ -414,9 +424,12 @@ public class ProyectoEntornos {
     public static void menuGestor() {
         Scanner sc = new Scanner(System.in);
         sc.useLocale(Locale.ENGLISH);
+        boolean val, usuExiste;
         int menuGestor, minPrep;
         double precio;
-        String nomProducto, ingrediente, ingredientes, alergeno, alergenos, codProdMod;
+        String codProducto = null, nomProducto, ingrediente, ingredientes, alergeno, alergenos, menuModProd,
+                idUsu, dni, tipo, username, clave, correo, nombreApellidos, direccion;
+        Vector<Usuario> usuarios = new Vector<Usuario>();
         Vector<Producto> productos = new Vector<Producto>();
         do {
             System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir empleado\n5. Modificar empleado\n6. Borrar empleado\n7. Salir");
@@ -425,8 +438,10 @@ public class ProyectoEntornos {
             switch (menuGestor) {
                 case 1:
                     ingredientes = "";
-                    System.out.println("Introduce nombre producto");
-                    nomProducto = sc.nextLine();
+                    do {
+                        System.out.println("Introduce nombre producto");
+                        nomProducto = sc.nextLine();
+                    } while (nomProducto.length() < 1 || nomProducto.length() > 50);
                     do {
                         System.out.println("Introduce ingrediente (STOP para parar)");
                         ingrediente = sc.nextLine();
@@ -434,20 +449,24 @@ public class ProyectoEntornos {
                             break;
                         } else if (ingrediente.length() + ingredientes.length() > 200) {
                             System.out.println("No se pudo añadir ingrediente (supera límite de caracteres)");
+                            ingrediente = "STOP";
+                            break;
                         } else if (ingredientes.length() == 0) {
                             ingredientes = ingrediente;
                         } else {
                             ingredientes = ingredientes + ingrediente;
                         }
                     } while (!ingrediente.equalsIgnoreCase("STOP"));
+                    alergenos = "";
                     do {
-                        alergenos = "";
                         System.out.println("Introduce alérgeno (STOP para parar)");
                         alergeno = sc.nextLine();
                         if (alergeno.equalsIgnoreCase("STOP")) {
                             break;
-                        } else if (alergeno.length() + alergenos.length() > 200) {
+                        } else if (alergeno.length() + alergenos.length() > 100) {
                             System.out.println("No se pudo añadir alergeno (supera límite de caracteres)");
+                            alergeno = "STOP";
+                            break;
                         } else if (alergenos.length() == 0) {
                             alergenos = alergeno;
                         } else {
@@ -461,10 +480,11 @@ public class ProyectoEntornos {
                     do {
                         System.out.println("Introduce minutos de preparación");
                         minPrep = sc.nextInt();
-                    } while (minPrep < 1 || minPrep > 90);
+                    } while (minPrep < 1 || minPrep > 120);
                     try {
-                        String codProd = bd.getCodProducto();
-                        bd.addProducto(new Producto(codProd, nomProducto, ingredientes, alergenos, precio, minPrep));
+                        codProducto = bd.getCodProducto();
+                        bd.addProducto(new Producto(codProducto, nomProducto, ingredientes, alergenos, precio, minPrep));
+                        bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Añadido producto " + codProducto, null);
                         System.out.println("Producto añadido");
                     } catch (ErrorBBDD ex) {
                         System.out.println("Error -> " + ex);
@@ -472,6 +492,7 @@ public class ProyectoEntornos {
                     }
                     break;
                 case 2:
+                    codProducto = "";
                     try {
                         productos = bd.listadoProductos();
                     } catch (ErrorBBDD ex) {
@@ -481,16 +502,230 @@ public class ProyectoEntornos {
                     for (Producto p : productos) {
                         System.out.println(p.toString());
                     }
-                    System.out.println("Introduce código del producto a modificar");
-                    codProdMod = sc.nextLine();
+                    do {
+                        val = false;
+                        System.out.println("Introduce código del producto a modificar");
+                        codProducto = sc.nextLine();
+                        for (Producto p : productos) {
+                            if (p.getCodProducto().equalsIgnoreCase(codProducto)) {
+                                val = true;
+                                break;
+                            }
+                        }
+                    } while (!val);
+                    do {
+                        System.out.println("Introduce atributo a modificar (nomProducto, ingredientes, alergenos, precio, minPrep, stop para cerrar)");
+                        menuModProd = sc.nextLine();
+                        switch (menuModProd) {
+                            case "nomProducto":
+                                nomProducto = "";
+                                do {
+                                    System.out.println("Introduce nuevo nom producto");
+                                    nomProducto = sc.nextLine();
+                                } while (nomProducto.length() < 1 || nomProducto.length() > 50);
+                                try {
+                                    bd.modProducto(codProducto, menuModProd, nomProducto);
+                                    bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Modificación del nombre del producto " + codProducto, "Nuevo nomProducto: " + nomProducto);
+                                    System.out.println("Producto modificado");
+                                } catch (ErrorBBDD ex) {
+                                    System.out.println("Error -> " + ex);
+                                }
+                                break;
+                            case "ingredientes":
+                                ingredientes = "";
+                                do {
+                                    System.out.println("Introduce ingrediente (STOP para parar)");
+                                    ingrediente = sc.nextLine();
+                                    if (ingrediente.equalsIgnoreCase("STOP")) {
+                                        break;
+                                    } else if (ingrediente.length() + ingredientes.length() > 200) {
+                                        System.out.println("No se pudo añadir ingrediente (supera límite de caracteres)");
+                                    } else if (ingredientes.length() == 0) {
+                                        ingredientes = ingrediente;
+                                    } else {
+                                        ingredientes = ingredientes + ingrediente;
+                                    }
+                                } while (!ingrediente.equalsIgnoreCase("STOP"));
+                                try {
+                                    bd.modProducto(codProducto, menuModProd, ingredientes);
+                                    bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Modificación de los ingredientes del producto " + codProducto, null);
+                                    System.out.println("Producto modificado");
+                                } catch (ErrorBBDD ex) {
+                                    System.out.println("Error -> " + ex);
+                                }
+                                break;
+                            case "alergenos":
+                                alergenos = "";
+                                do {
+                                    alergenos = "";
+                                    System.out.println("Introduce alérgeno (STOP para parar)");
+                                    alergeno = sc.nextLine();
+                                    if (alergeno.equalsIgnoreCase("STOP")) {
+                                        break;
+                                    } else if (alergeno.length() + alergenos.length() > 200) {
+                                        System.out.println("No se pudo añadir alergeno (supera límite de caracteres)");
+                                    } else if (alergenos.length() == 0) {
+                                        alergenos = alergeno;
+                                    } else {
+                                        alergenos = alergenos + alergeno;
+                                    }
+                                } while (!alergeno.equalsIgnoreCase("STOP"));
+                                try {
+                                    bd.modProducto(codProducto, menuModProd, alergenos);
+                                    bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Modificación de los alergenos del producto " + codProducto, null);
+                                    System.out.println("Producto modificado");
+                                } catch (ErrorBBDD ex) {
+                                    System.out.println("Error -> " + ex);
+                                }
+                                break;
+                            case "precio":
+                                precio = 0;
+                                do {
+                                    System.out.println("Introduce precio");
+                                    precio = sc.nextDouble();
+                                } while (precio < 0.01 || precio > 99.99);
+                                try {
+                                    bd.modProducto(codProducto, menuModProd, Double.toString(precio));
+                                    bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Modificación del precio del producto " + codProducto, "Nuevo precio: " + precio);
+                                    System.out.println("Producto modificado");
+                                } catch (ErrorBBDD ex) {
+                                    System.out.println("Error -> " + ex);
+                                }
+                                break;
+                            case "minPrep":
+                                minPrep = 0;
+                                do {
+                                    System.out.println("Introduce minutos de preparación");
+                                    minPrep = sc.nextInt();
+                                } while (minPrep < 1 || minPrep > 120);
+                                try {
+                                    bd.modProducto(codProducto, menuModProd, Integer.toString(minPrep));
+                                    bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Modificación de los min. de prep. del producto " + codProducto, "Nuevo minPrep: " + minPrep);
+                                    System.out.println("Producto modificado");
+                                } catch (ErrorBBDD ex) {
+                                    System.out.println("Error -> " + ex);
+                                }
+                                break;
+                            case "stop":
+                                System.out.println("Menú cerrado");
+                                break;
+                            default:
+                                break;
+                        }
+                    } while (!menuModProd.equalsIgnoreCase("stop"));
                     break;
                 case 3:
+                    try {
+                        productos = bd.listadoProductos();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (Producto p : productos) {
+                        System.out.println(p.toString());
+                    }
+                    do {
+                        val = false;
+                        System.out.println("Introduce código del producto a borrar");
+                        codProducto = sc.nextLine();
+                        for (Producto p : productos) {
+                            if (p.getCodProducto().equalsIgnoreCase(codProducto)) {
+                                val = true;
+                                break;
+                            }
+                        }
+                    } while (!val);
+                    try {
+                        bd.deleteProducto(codProducto);
+                        bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Borrado producto " + codProducto, null);
+                        System.out.println("Producto borrado");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                    }
                     break;
                 case 4:
+                    do {
+                        System.out.println("Introduce DNI");
+                        dni = sc.nextLine();
+                    } while (!dni.matches("[0-9]{8}[A-Z]{1}$"));
+                    do {
+                        usuExiste = false;
+                        System.out.println("Introduce username (nombre usuario)");
+                        username = sc.nextLine();
+                        try {
+                            usuarios = bd.listadoUsuarios();
+                        } catch (ErrorBBDD ex) {
+                            System.out.println("Error -> " + ex);
+                            continue;
+                        }
+                        for (Usuario u : usuarios) {
+                            if (u.getNombreUsuario().equalsIgnoreCase(username)) {
+                                usuExiste = true;
+                                break;
+                            }
+                        }
+                    } while (usuExiste);
+                    do {
+                        System.out.println("Clave debe tener entre 6 y 30 caracteres, tener mínimo una mayúscula, una minúscula, un número y un caracter especial y no tener espacios");
+                        System.out.println("Introduce clave");
+                        clave = sc.nextLine();
+                    } while (!valClave(clave));
+                    do {
+                        System.out.println("Introduce correo");
+                        correo = sc.nextLine();
+                    } while (!correo.contains("@"));
+                    do {
+                        System.out.println("Introduce nombre y apellidos");
+                        nombreApellidos = sc.nextLine();
+                    } while (nombreApellidos.length() < 1 || nombreApellidos.length() > 50);
+                    do {
+                        System.out.println("Introduce dirección");
+                        direccion = sc.nextLine();
+                    } while (direccion.length() < 1 || direccion.length() > 50);
+                    try {
+                        idUsu = bd.getCodUsu("E");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    try {
+                        bd.addUsuario(new Usuario(idUsu, dni, 'E', username, clave, correo, nombreApellidos, direccion));
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
                     break;
                 case 5:
                     break;
                 case 6:
+                    try {
+                        usuarios = bd.listadoUsuarios();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (Usuario u : usuarios) {
+                        System.out.println(u.toString());
+                    }
+                    do {
+                        val = false;
+                        System.out.println("Introduce código del usuario a borrar");
+                        idUsu = sc.nextLine();
+                        for (Usuario u : usuarios) {
+                            if (u.getIdUsuario().equalsIgnoreCase(idUsu)) {
+                                if (u.getTipo() == 'E') {
+                                    val = true;
+                                }
+                                break;
+                            }
+                        }
+                    } while (!val);
+                    try {
+                        bd.deleteProducto(codProducto);
+                        System.out.println("Empleado borrado");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                    }
                     break;
                 case 7:
                     System.out.println("Menú cerrado");
@@ -500,8 +735,6 @@ public class ProyectoEntornos {
             }
         } while (menuGestor != 7);
     }
-
-
 
     /**
      * Menú de los administradores
