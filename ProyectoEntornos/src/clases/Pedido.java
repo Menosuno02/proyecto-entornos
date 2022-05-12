@@ -24,4 +24,9 @@ public class Pedido {
         this.precio = precio;
     }
 
+    @Override
+    public String toString() {
+        return "Pedido{" + "codPedido=" + codPedido + ", idCliente=" + idCliente + ", idRepartidor=" + idRepartidor + ", fechaAlta=" + fechaAlta + ", fechaEntrega=" + fechaEntrega + ", precio=" + precio + '}';
+    }
+
 }

@@ -1,10 +1,10 @@
 package bbdd;
 
+import clases.*;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import proyectoentornos.*;
-import clases.*;
-import java.time.LocalDateTime;
 
 /**
  *
@@ -65,7 +65,7 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
-    public boolean addUsuario(Usuario u) throws ErrorBBDD {
+    public boolean addUsuario(Usuario u, boolean repartidor) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO usuarios VALUES(?,?,?,?,?,?,?,?,?)";
         try {
@@ -80,7 +80,7 @@ public class BD_Restaurante extends BD_Conector {
             ps.setString(7, u.getNombreApellidos());
             ps.setString(8, u.getDireccion());
             if (u instanceof Empleado) {
-                ps.setInt(9, ((Empleado) u).isRepartidor() ? 1 : 0);
+                ps.setInt(9, (repartidor ? 1 : 0));
             } else {
                 ps.setInt(9, 0);
             }
@@ -164,15 +164,15 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
-    public Vector<String> getProductosCesta(String idCliente) throws ErrorBBDD {
-        Vector<String> productos = new Vector<String>();
+    public Vector<ProductoCesta> getProductosCesta(String idCliente) throws ErrorBBDD {
+        Vector<ProductoCesta> productos = new Vector<ProductoCesta>();
         String sql = "SELECT * FROM productosCesta WHERE idCliente = '" + idCliente + "'";
         try {
             this.abrir();
             s = c.createStatement();
             reg = s.executeQuery(sql);
             while (reg.next()) {
-                productos.add("Producto " + reg.getString("codProducto") + ", cantidad: " + reg.getInt("cantidad"));
+                productos.add(new ProductoCesta(reg.getString("idCliente"), reg.getString("codProducto"), reg.getInt("cantidad")));
             }
             s.close();
             this.cerrar();
@@ -485,7 +485,36 @@ public class BD_Restaurante extends BD_Conector {
             throw new ErrorBBDD("No se pudo borrar el producto");
         }
     }
-    
+
+    public boolean modUsuario(String idUsuario, String atributo, String valor) throws ErrorBBDD {
+        boolean repartidor = false;
+        PreparedStatement ps;
+        if (atributo.equals("repartidor")) {
+            if (valor.equalsIgnoreCase("true")) {
+                repartidor = true;
+            } else {
+                repartidor = false;
+            }
+        }
+        String sql = "UPDATE usuarios SET " + atributo + " = ? WHERE idUsuario = ?";
+        try {
+            this.abrir();
+            ps = c.prepareStatement(sql);
+            if (atributo.equals("repartidor")) {
+                ps.setInt(1, (repartidor ? 1 : 0));
+            } else {
+                ps.setString(1, valor);
+            }
+            ps.setString(2, idUsuario);
+            ps.executeUpdate(sql);
+            ps.close();
+            this.cerrar();
+            return true;
+        } catch (SQLException e) {
+            throw new ErrorBBDD("No se pudo modificar el usuario");
+        }
+    }
+
     public boolean deleteUsuario(String idUsu) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "DELETE usuarios where idUsuario = ?";
@@ -499,6 +528,24 @@ public class BD_Restaurante extends BD_Conector {
             return true;
         } catch (SQLException e) {
             throw new ErrorBBDD("No se pudo borrar el usuario");
+        }
+    }
+
+    public Vector<ModProducto> listadoModificaciones() throws ErrorBBDD {
+        Vector<ModProducto> modificaciones = new Vector<ModProducto>();
+        String sql = "SELECT * FROM modProductos";
+        try {
+            this.abrir();
+            s = c.createStatement();
+            reg = s.executeQuery(sql);
+            while (reg.next()) {
+                modificaciones.add(new ModProducto(reg.getString("idUsuario"), reg.getString("codProducto"), reg.getTimestamp("fecha").toLocalDateTime(), reg.getString("accion"), reg.getString("descripcion")));
+            }
+            s.close();
+            this.cerrar();
+            return modificaciones;
+        } catch (SQLException ex) {
+            throw new ErrorBBDD("Error listando modificaciones");
         }
     }
 }
