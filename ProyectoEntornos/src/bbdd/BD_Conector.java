@@ -13,6 +13,11 @@ public class BD_Conector {
     private String url;
     protected Connection c;
 
+    /**
+     * Constructor del conector a la base de datos
+     *
+     * @param bbdd nombre de la base de datos
+     */
     public BD_Conector(String bbdd) {
         base = bbdd;
         usuario = "root";

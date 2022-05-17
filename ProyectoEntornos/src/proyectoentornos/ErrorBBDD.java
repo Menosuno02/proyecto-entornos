@@ -1,6 +1,7 @@
 package proyectoentornos;
 
 /**
+ * Error al acceder a la base de datos
  *
  * @author administrador
  */

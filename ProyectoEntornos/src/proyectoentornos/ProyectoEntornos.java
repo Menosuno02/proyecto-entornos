@@ -81,7 +81,7 @@ public class ProyectoEntornos {
      * - Posee al menos un número, una minúscula, una mayúscula y un caracter especial
      * - No posee espacios
      *
-     * @param clave la contraseña
+     * @param clave la contraseña a validar
      * @return true si la contraseña cumple la condición
      */
     public static boolean valClave(String clave) {
@@ -94,6 +94,11 @@ public class ProyectoEntornos {
         return m.matches();
     }
 
+    /**
+     * Método para iniciar sesión, verificando que el usuario exista y la clave introducida sea correcta
+     *
+     * @return true si se ha iniciado sesión con éxito
+     */
     public static boolean iniciarSesion() {
         String username, clave;
         boolean usuCon;
@@ -177,12 +182,23 @@ public class ProyectoEntornos {
         } while (menuCliente != 6);
     }
 
+    /**
+     * Método para añadir un producto a la cesta del usuario, verificando que el producto existe y que no ha sido añadido ya a la cesta
+     *
+     * @return true si se ha añadido un producto a la cesta con éxito
+     */
     public static boolean addProductoCesta() {
         int cantidad;
         boolean valProd;
         String codProducto;
         Vector<Producto> productos = new Vector<Producto>();
         Vector<String> codigosCesta = new Vector<String>();
+        try {
+            productos = bd.listadoProductos();
+        } catch (ErrorBBDD ex) {
+            System.out.println("Error -> " + ex);
+            return false;
+        }
         do {
             valProd = false;
             System.out.println("Introduce código producto");
@@ -220,10 +236,14 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método para borrar un proceso de la cesta del usuario verificando que exista en la cesta
+     *
+     * @return true si se ha borrado un producto de la cesta con éxito
+     */
     public static boolean deleteProductoCesta() {
         boolean valProd;
         String codProducto;
-        Vector<Producto> productos = new Vector<Producto>();
         Vector<String> productosCesta = new Vector<String>();
         do {
             valProd = false;
@@ -234,11 +254,6 @@ public class ProyectoEntornos {
             } catch (ErrorBBDD ex) {
                 System.out.println("Error -> " + ex);
                 break;
-            }
-            for (Producto p : productos) {
-                if (p.getCodProducto().equalsIgnoreCase(codProducto)) {
-                    valProd = true;
-                }
             }
             for (int i = 0; i <= productosCesta.size() - 1; i++) {
                 if (productosCesta.get(i).equalsIgnoreCase(codProducto)) {
@@ -255,6 +270,9 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método que lista los productos de la cesta del usuario
+     */
     public static void listarProductosCesta() {
         Vector<ProductoCesta> cesta = new Vector<ProductoCesta>();
         try {
@@ -268,6 +286,11 @@ public class ProyectoEntornos {
         }
     }
 
+    /**
+     * Método que tramita un pedido con los productos de la cesta del usuario, creando el pedido y sus procesos y una tarjeta si el usuario no tuviese una y vaciando la cesta
+     *
+     * @return true si se ha tramitado el pedido con éxito
+     */
     public static boolean tramitarPedido() {
         int cantidad, ccv;
         double importe = 0, importeTotal = 0;
@@ -406,7 +429,8 @@ public class ProyectoEntornos {
     public static void menuGestor() {
         int menuGestor;
         do {
-            System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir empleado\n5. Modificar empleado\n6. Borrar empleado\n7. Salir");
+            System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir empleado\n5. Modificar empleado\n6. Borrar empleado\n7. Listado modificaciones productos"
+                    + "\n8. Salir");
             menuGestor = sc.nextInt();
             sc.nextLine();
             switch (menuGestor) {
@@ -441,12 +465,24 @@ public class ProyectoEntornos {
                     }
                     break;
                 case 7:
+                    Vector<ModProducto> modificaciones = new Vector<ModProducto>();
+                    try {
+                        modificaciones = bd.listadoModificaciones();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (ModProducto m : modificaciones) {
+                        System.out.println(m.toString());
+                    }
+                    break;
+                case 8:
                     System.out.println("Menú cerrado");
                     break;
                 default:
                     break;
             }
-        } while (menuGestor != 7);
+        } while (menuGestor != 8);
     }
 
     /**
@@ -455,7 +491,8 @@ public class ProyectoEntornos {
     public static void menuAdmin() {
         int menuAdmin;
         do {
-            System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir usuario\n5. Modificar usuario\n6. Borrar usuario\n7. Salir");
+            System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir usuario\n5. Modificar usuario\n6. Borrar usuario\n7. Listado modificaciones productos"
+                    + "\n8. Salir");
             menuAdmin = sc.nextInt();
             sc.nextLine();
             switch (menuAdmin) {
@@ -490,14 +527,31 @@ public class ProyectoEntornos {
                     }
                     break;
                 case 7:
+                    Vector<ModProducto> modificaciones = new Vector<ModProducto>();
+                    try {
+                        modificaciones = bd.listadoModificaciones();
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                        break;
+                    }
+                    for (ModProducto m : modificaciones) {
+                        System.out.println(m.toString());
+                    }
+                    break;
+                case 8:
                     System.out.println("Menú cerrado");
                     break;
                 default:
                     break;
             }
-        } while (menuAdmin != 7);
+        } while (menuAdmin != 8);
     }
 
+    /**
+     * Método para añadir un producto a la base de datos verificando los datos del producto y registrando la modificación realizada (alta)
+     *
+     * @return true si se ha dado de alta el producto con éxito
+     */
     public static boolean addProducto() {
         int minPrep;
         double precio;
@@ -558,6 +612,11 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método que modifica los atributos de un producto de la base de datos preguntando el atributo, validando los datos y registrando la modificación realizada (modificación)
+     *
+     * @return true si se ha modificado el producto con éxito
+     */
     public static boolean modProducto() {
         boolean val;
         int minPrep;
@@ -688,6 +747,11 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método que da de baja un producto validando que exista y registrando la modificación realizada (baja)
+     *
+     * @return true si se ha dado de baja el producto con éxito
+     */
     public static boolean deleteProducto() {
         boolean val;
         String codProducto = null;
@@ -723,6 +787,12 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método que da de alta un usuario, se usa en el inicio de la aplicación para crear clientes (crear usuario) o cuando un gestor o administrador 
+     * quiere dar de alta un empleado o gestor (dependiendo del tipo de usuario logeado)
+     *
+     * @return true si se ha dado de alta el usuario con éxito
+     */
     public static boolean addUsuario() {
         String username, clave, dni, correo, nombreApellidos, direccion, idUsu, tipo = null;
         boolean usuExiste, repartidor = false, val;
@@ -769,6 +839,13 @@ public class ProyectoEntornos {
             tipo = "C";
         } else if (usuLog.getTipo() == 'G') {
             tipo = "E";
+        } else if (usuLog.getTipo() == 'A') {
+            do {
+                System.out.println("Introduce tipo");
+                tipo = sc.nextLine().toUpperCase();
+            } while (!tipo.equals("G") && !tipo.equals("E"));
+        }
+        if (tipo.equals("E")) {
             do {
                 val = false;
                 try {
@@ -779,23 +856,6 @@ public class ProyectoEntornos {
                     val = false;
                 }
             } while (!val);
-        } else if (usuLog.getTipo() == 'A') {
-            do {
-                System.out.println("Introduce tipo");
-                tipo = sc.nextLine().toUpperCase();
-            } while (!tipo.equals("G") && !tipo.equals("E"));
-            if (tipo.equals("E")) {
-                do {
-                    val = false;
-                    try {
-                        System.out.println("¿Empleado repartidor? (true/false");
-                        repartidor = sc.nextBoolean();
-                        val = true;
-                    } catch (InputMismatchException ex) {
-                        val = false;
-                    }
-                } while (!val);
-            }
         }
         try {
             idUsu = bd.getCodUsu(tipo);
@@ -812,6 +872,12 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método que modifica los atributos de un usuario de la base de datos comprobando si el usuario logeado puede modificar el usuario, preguntando 
+     * el atributo que se quieren modificar y validando los datos
+     *
+     * @return true si se ha modificado el usuario con éxito
+     */
     public static boolean modUsuario() {
         boolean val, repartidor;
         String idUsuario = "", menuModUsu, correo, direccion;
@@ -827,7 +893,7 @@ public class ProyectoEntornos {
         }
         do {
             val = false;
-            System.out.println("Introduce código del producto a modificar");
+            System.out.println("Introduce código del usuario a modificar");
             idUsuario = sc.nextLine();
             for (Usuario u : usuarios) {
                 if (u.getIdUsuario().equalsIgnoreCase(idUsuario)) {
@@ -903,6 +969,11 @@ public class ProyectoEntornos {
         return true;
     }
 
+    /**
+     * Método que da de baja un usuario, validando que exista y que el usuario logeado tenga permisos para borrarlo
+     *
+     * @return true si se ha dado de baja el usuario con éxito
+     */
     public static boolean deleteUsuario() {
         boolean val;
         String codProducto = null, idUsu;

@@ -15,6 +15,16 @@ public class Pedido {
     private LocalDateTime fechaEntrega;
     private double precio;
 
+    /**
+     * Constructor de un pedido
+     *
+     * @param codPedido código del pedido
+     * @param idCliente id del cliente que ha realizado el pedido
+     * @param idRepartidor id del empleado repartidor que reparte el pedido
+     * @param fechaAlta fecha en la que el pedido fue dado de alta
+     * @param fechaEntrega fecha en el que el pedido fue entregado
+     * @param precio importe total del pedido
+     */
     public Pedido(String codPedido, String idCliente, String idRepartidor, LocalDateTime fechaAlta, LocalDateTime fechaEntrega, double precio) {
         this.codPedido = codPedido;
         this.idCliente = idCliente;

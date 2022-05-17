@@ -16,13 +16,20 @@ public class BD_Restaurante extends BD_Conector {
     private static ResultSet reg;
 
     /**
+     * Constructor de la clase para acceder a la base de datos del restaurante
      *
-     * @param file
+     * @param file nombre de la base de datos
      */
     public BD_Restaurante(String file) {
         super(file);
     }
 
+    /**
+     * Método que busca los usuarios de la base de datos y los devuelve mediante un vector
+     *
+     * @return vector con los usuarios de la base de datos
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<Usuario> listadoUsuarios() throws ErrorBBDD {
         Vector<Usuario> usuarios = new Vector<Usuario>();
         String sql = "SELECT * FROM usuarios";
@@ -45,6 +52,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca el número de usuarios de un tipo de usuario para retornar el menor código de usuario posible para uno nuevo de ese tipo
+     *
+     * @param tipoUsu tipo de usuario del que queremos buscar el menor código de usuario
+     * @return el código de usuario del nuevo usuario
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public String getCodUsu(String tipoUsu) throws ErrorBBDD {
         int cuenta = 0;
         String codUsu = "";
@@ -61,10 +75,18 @@ public class BD_Restaurante extends BD_Conector {
             this.cerrar();
             return codUsu;
         } catch (SQLException ex) {
-            throw new ErrorBBDD("Error creando cod pedido");
+            throw new ErrorBBDD("Error creando cod usuario");
         }
     }
 
+    /**
+     * Método que añade un nuevo usuario a la base de datos
+     *
+     * @param u el nuevo usuario a añadir
+     * @param repartidor si el empleado a añadir puede trabajar como repartidor o no
+     * @return true si el usuario se ha añadido con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean addUsuario(Usuario u, boolean repartidor) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO usuarios VALUES(?,?,?,?,?,?,?,?,?)";
@@ -93,6 +115,12 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca los productos/platos de la base de datos y los devuelve mediante un vector
+     *
+     * @return vector con los productos de la base de datos
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<Producto> listadoProductos() throws ErrorBBDD {
         Vector<Producto> productos = new Vector<Producto>();
         String sql = "SELECT * FROM productos";
@@ -111,6 +139,15 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que añade un nuevo producto a la cesta de un usuario en la base de datos
+     *
+     * @param idCliente el id del cliente que añade un producto a su cesta
+     * @param codProducto código del producto a añadir
+     * @param cantidad cantidad del producto (número de platos)
+     * @return true si el producto se añadió a la cesta con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean addProductoCesta(String idCliente, String codProducto, int cantidad) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO productosCesta VALUES (?,?,?)";
@@ -129,6 +166,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca los códigos de los productos en la cesta de cierto cliente y los devuelve mediante un vector
+     *
+     * @param idCliente el id del cliente dueño de la cesta
+     * @return vector con los códigos de los productos de la cesta del cliente
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<String> getCodProductosCesta(String idCliente) throws ErrorBBDD {
         Vector<String> productos = new Vector<String>();
         String sql = "SELECT * FROM productosCesta WHERE idCliente = '" + idCliente + "'";
@@ -147,6 +191,14 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que quita un producto de la cesta de cierto cliente (sin importar la cantidad)
+     *
+     * @param idCliente el id del cliente dueño de la cesta
+     * @param codProducto el código del producto que queremos retirar de la cesta
+     * @return true si el producto se ha retirado de la cesta con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean quitarProductoCesta(String idCliente, String codProducto) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "DELETE productosCesta WHERE idCliente = ? AND codProducto = ?";
@@ -164,6 +216,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca los productos de una cesta de cierto cliente y los devuelve mediante un vector
+     *
+     * @param idCliente el id del cliente dueño de la cesta
+     * @return vector con los productos de la cesta
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<ProductoCesta> getProductosCesta(String idCliente) throws ErrorBBDD {
         Vector<ProductoCesta> productos = new Vector<ProductoCesta>();
         String sql = "SELECT * FROM productosCesta WHERE idCliente = '" + idCliente + "'";
@@ -182,6 +241,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca y devuelve la tarjeta de cierto cliente, usado para saber si el cliente tiene tarjeta o no
+     *
+     * @param idCliente el id del cliente del que queremos buscar una tarjeta
+     * @return la tarjeta
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Tarjeta buscarTarjeta(String idCliente) throws ErrorBBDD {
         Tarjeta tarjeta = null;
         String sql = "SELECT * FROM tarjetas WHERE idCliente = '" + idCliente + "'";
@@ -200,6 +266,14 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que añade una nueva tarjeta de cierto cliente a la base de datos
+     *
+     * @param idCliente el id del cliente dueño de la tarjeta
+     * @param t la tarjeta que se quiere añadir a la base de datos
+     * @return true si se ha añadido la tarjeta a la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean addTarjeta(String idCliente, Tarjeta t) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO tarjetas VALUES (?,?,?,?)";
@@ -219,6 +293,12 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca el número de pedidos en la base de datos para retornar el menor número de pedido posible para uno nuevo
+     *
+     * @return el código de pedido del nuevo pedido
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public String getCodPedido() throws ErrorBBDD {
         int cuenta = 0;
         String codPedido = "";
@@ -239,6 +319,15 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que devuelve la cantidad de platos de cierto producto que cierto dueño tiene en su cesta, usado para calcular el importe 
+     * de un nuevo proceso de pedido antes de añadirlo a la base de datos
+     *
+     * @param idCliente el id del cliente dueño de la cesta
+     * @param codProducto el código del producto especificado
+     * @return la cantidad de cierto producto en la cesta de cierto cliente
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public int getCantidadCesta(String idCliente, String codProducto) throws ErrorBBDD {
         int cantidad = 0;
         String sql = "SELECT cantidad FROM productosCesta WHERE idCliente = '" + idCliente + "'"
@@ -258,6 +347,17 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que añade un nuevo proceso de cierto pedido a la base de datos, asignando como empleado encargado de realizar el proceso 
+     * a uno aleatorio de todos los empleados de la base de datos, como fecha de realización la actual más los minutos de preparación del producto más 
+     * una cantidad aleatoria de minutos y como precio el precio del producto multiplicado por la cantidad de platos del producto
+     *
+     * @param codPedido el código del pedido del que pertenece el proceso
+     * @param codProducto el código del producto del proceso
+     * @param cantidad la cantidad de platos del producto
+     * @return true si se ha añadido un nuevo proceso de pedido a la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public double addProcesoPedido(String codPedido, String codProducto, int cantidad) throws ErrorBBDD {
         PreparedStatement ps;
         Random r = new Random();
@@ -294,10 +394,21 @@ public class BD_Restaurante extends BD_Conector {
             this.cerrar();
             return precio;
         } catch (SQLException ex) {
-            throw new ErrorBBDD("Error buscando cantidad");
+            throw new ErrorBBDD("Error añadiendo proceso de pedido");
         }
     }
 
+    /**
+     * Método que añade un nuevo pedido a la base de datos, asignando como repartidor encargado de repartir el proceso a uno aleatorio de 
+     * todos los empleados repartidores de la base de datos, como fecha de entrega la actual más los máximos minutos de preparación de todos los procesos del pedido
+     * más una cantidad aleatoria de minutos
+     *
+     * @param idCliente el id del cliente que ha realizado el pedido
+     * @param importeTotal el importe total de todos platos del pedido
+     * @param codPedido el código del pedido
+     * @return true si se ha añadido un nuevo pedido a la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean addPedido(String idCliente, double importeTotal, String codPedido) throws ErrorBBDD {
         int minPrep = 0;
         Random r = new Random();
@@ -310,18 +421,12 @@ public class BD_Restaurante extends BD_Conector {
         try {
             this.abrir();
             s = c.createStatement();
-            reg = s.executeQuery(sql2);
-            while (reg.next()) {
-                repartidores.add(reg.getString("idUsuario"));
-            }
-            idRepartidor = repartidores.get(r.nextInt(repartidores.size()));
-            s = c.createStatement();
-            reg = s.executeQuery(sql2);
-            while (reg.next()) {
-                repartidores.add(reg.getString("idUsuario"));
-            }
-            idRepartidor = repartidores.get(r.nextInt(repartidores.size()));
             reg = s.executeQuery(sql);
+            while (reg.next()) {
+                repartidores.add(reg.getString("idUsuario"));
+            }
+            idRepartidor = repartidores.get(r.nextInt(repartidores.size()));
+            reg = s.executeQuery(sql2);
             while (reg.next()) {
                 minPrep = reg.getInt("max");
             }
@@ -343,6 +448,12 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca los procesos de pedidos de la base de datos y los devuelve mediante un vector
+     *
+     * @return vector con los procesos de pedidos
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<ProcesoPedido> listadoProcesosPedidos() throws ErrorBBDD {
         Vector<ProcesoPedido> procesos = new Vector<ProcesoPedido>();
         String sql = "SELECT * FROM procesosPedidos";
@@ -361,6 +472,12 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca los pedidos de la base de datos y los devuelve mediante un vector
+     *
+     * @return vector con los pedidos
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<Pedido> listadoPedidos() throws ErrorBBDD {
         Vector<Pedido> pedidos = new Vector<Pedido>();
         String sql = "SELECT * FROM pedidos";
@@ -379,6 +496,12 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca el número de productos en la base de datos para retornar el menor número de producto posible para uno nuevo
+     *
+     * @return el código de producto del nuevo producto
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public String getCodProducto() throws ErrorBBDD {
         int cuenta = 0;
         String codProducto = "";
@@ -399,6 +522,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que añade un nuevo producto/plato a la base de datos
+     *
+     * @param p el nuevo producto a añadir
+     * @return true si se ha añadido el nuevo producto a la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean addProducto(Producto p) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO productos VALUES(?,?,?,?,?,?)";
@@ -420,6 +550,16 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que añade una nueva modificación de un producto realizada por un usuario a la base de datos
+     *
+     * @param idUsuario el id del usuario que realiza la modificación
+     * @param codProducto el código del producto que sufre la modificación
+     * @param accion modificación realizada sobre el producto (alta, modificación, baja)
+     * @param descripcion descripción de la modificación
+     * @return true si se ha añadido la modificación del producto a la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean addModProducto(String idUsuario, String codProducto, String accion, String descripcion) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "INSERT INTO modProductos VALUES(?,?,?,?,?)";
@@ -440,6 +580,15 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que cambia el valor de un atributo de un producto de la base de datos
+     *
+     * @param codProducto el código del producto a modificar
+     * @param atributo atributo a modificar del producto
+     * @param valor valor del atributo a modificar
+     * @return true si se ha modificado el producto con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean modProducto(String codProducto, String atributo, String valor) throws ErrorBBDD {
         int nuevoMinPrep = 0;
         double nuevoPrecio = 0;
@@ -470,6 +619,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que da de baja un producto/plato de la base de datos
+     *
+     * @param codProducto el código del producto a borrar
+     * @return true si se ha borrado el producto de la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean deleteProducto(String codProducto) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "DELETE productos WHERE codProducto = ?";
@@ -486,6 +642,15 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que cambia el valor de un atributo de un usuario de la base de datos
+     *
+     * @param idUsuario el id del usuario a modificar
+     * @param atributo atributo a modificar del usuario
+     * @param valor valor del atributo a modificar
+     * @return true si se ha modificado el usuario de la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean modUsuario(String idUsuario, String atributo, String valor) throws ErrorBBDD {
         boolean repartidor = false;
         PreparedStatement ps;
@@ -515,6 +680,13 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que da de baja un usuario de la base de datos
+     *
+     * @param idUsu el id del usuario a borrar
+     * @return true si se ha borrado el usuario de la base de datos con éxito
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public boolean deleteUsuario(String idUsu) throws ErrorBBDD {
         PreparedStatement ps;
         String sql = "DELETE usuarios where idUsuario = ?";
@@ -531,6 +703,12 @@ public class BD_Restaurante extends BD_Conector {
         }
     }
 
+    /**
+     * Método que busca las modificaciones a productos en la base de datos y las devuelve mediante un vector
+     *
+     * @return vector con las modificaciones hechas a los productos
+     * @throws ErrorBBDD error al acceder a la base de datos
+     */
     public Vector<ModProducto> listadoModificaciones() throws ErrorBBDD {
         Vector<ModProducto> modificaciones = new Vector<ModProducto>();
         String sql = "SELECT * FROM modProductos";
