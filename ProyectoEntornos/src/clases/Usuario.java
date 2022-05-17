@@ -1,5 +1,13 @@
 package clases;
 
+import java.util.InputMismatchException;
+import java.util.Vector;
+import proyectoentornos.ErrorBBDD;
+import static proyectoentornos.ProyectoEntornos.bd;
+import static proyectoentornos.ProyectoEntornos.sc;
+import static proyectoentornos.ProyectoEntornos.usuLog;
+import static proyectoentornos.ProyectoEntornos.valClave;
+
 /**
  *
  * @author administrador
@@ -113,6 +121,230 @@ public class Usuario {
     @Override
     public String toString() {
         return "Usuario{" + "idUsuario=" + idUsuario + ", dni=" + dni + ", tipo=" + tipo + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", correo=" + correo + ", nombreApellidos=" + nombreApellidos + ", direccion=" + direccion + '}';
+    }
+
+    /**
+     * Método que da de alta un usuario, se usa en el inicio de la aplicación para crear clientes (crear usuario) o cuando un gestor o administrador 
+     * quiere dar de alta un empleado o gestor (dependiendo del tipo de usuario logeado)
+     *
+     * @return true si se ha dado de alta el usuario con éxito
+     */
+    public static boolean addUsuario() {
+        String username, clave, dni, correo, nombreApellidos, direccion, idUsu, tipo = null;
+        boolean usuExiste, repartidor = false, val;
+        Vector<Usuario> usuarios;
+        do {
+            System.out.println("Introduce DNI");
+            dni = sc.nextLine();
+        } while (!dni.matches("[0-9]{8}[A-Z]{1}$"));
+        do {
+            usuExiste = false;
+            System.out.println("Introduce username (nombre usuario)");
+            username = sc.nextLine();
+            try {
+                usuarios = bd.listadoUsuarios();
+            } catch (ErrorBBDD ex) {
+                System.out.println("Error -> " + ex);
+                continue;
+            }
+            for (Usuario u : usuarios) {
+                if (u.getNombreUsuario().equalsIgnoreCase(username)) {
+                    usuExiste = true;
+                    break;
+                }
+            }
+        } while (usuExiste);
+        do {
+            System.out.println("Clave debe tener entre 6 y 30 caracteres, tener mínimo una mayúscula, una minúscula, un número y un caracter especial y no tener espacios");
+            System.out.println("Introduce clave");
+            clave = sc.nextLine();
+        } while (!valClave(clave));
+        do {
+            System.out.println("Introduce correo");
+            correo = sc.nextLine();
+        } while (!correo.matches(".*@.*[.].*$") || (correo.length() < 1 || correo.length() > 50));
+        do {
+            System.out.println("Introduce nombre y apellidos");
+            nombreApellidos = sc.nextLine();
+        } while (nombreApellidos.length() < 1 || nombreApellidos.length() > 50);
+        do {
+            System.out.println("Introduce dirección");
+            direccion = sc.nextLine();
+        } while (direccion.length() < 1 || direccion.length() > 50);
+        if (usuLog == null) {
+            tipo = "C";
+        } else if (usuLog.getTipo() == 'G') {
+            tipo = "E";
+        } else if (usuLog.getTipo() == 'A') {
+            do {
+                System.out.println("Introduce tipo");
+                tipo = sc.nextLine().toUpperCase();
+            } while (!tipo.equals("G") && !tipo.equals("E"));
+        }
+        if (tipo.equals("E")) {
+            do {
+                val = false;
+                try {
+                    System.out.println("¿Empleado repartidor? (true/false");
+                    repartidor = sc.nextBoolean();
+                    val = true;
+                } catch (InputMismatchException ex) {
+                    val = false;
+                }
+            } while (!val);
+        }
+        try {
+            idUsu = bd.getCodUsu(tipo);
+        } catch (ErrorBBDD ex) {
+            System.out.println("Error -> " + ex);
+            return false;
+        }
+        try {
+            bd.addUsuario(new Usuario(idUsu, dni, tipo.charAt(0), username, clave, correo, nombreApellidos, direccion), repartidor);
+        } catch (ErrorBBDD ex) {
+            System.out.println("Error -> " + ex);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Método que modifica los atributos de un usuario de la base de datos comprobando si el usuario logeado puede modificar el usuario, 
+     * preguntando el atributo que se quieren modificar y validando los datos
+     *
+     * @return true si se ha modificado el usuario con éxito
+     */
+    public static boolean modUsuario() {
+        boolean val, repartidor;
+        String idUsuario = "", menuModUsu, correo, direccion;
+        Vector<Usuario> usuarios = new Vector<Usuario>();
+        try {
+            usuarios = bd.listadoUsuarios();
+        } catch (ErrorBBDD ex) {
+            System.out.println("Error -> " + ex);
+            return false;
+        }
+        for (Usuario u : usuarios) {
+            System.out.println(u.toString());
+        }
+        do {
+            val = false;
+            System.out.println("Introduce código del usuario a modificar");
+            idUsuario = sc.nextLine();
+            for (Usuario u : usuarios) {
+                if (u.getIdUsuario().equalsIgnoreCase(idUsuario)) {
+                    if ((usuLog.getTipo() == 'G' && u.getTipo() == 'E')
+                            || (usuLog.getTipo() == 'A' && (u.getTipo() == 'E' || u.getTipo() == 'G'))) {
+                        val = true;
+                    }
+                    break;
+                }
+            }
+        } while (!val);
+        do {
+            System.out.println("Introduce atributo a modificar (correo, direccion, repartidor, stop para cerrar)");
+            menuModUsu = sc.nextLine();
+            switch (menuModUsu) {
+                case "correo":
+                    correo = "";
+                    do {
+                        System.out.println("Introduce correo");
+                        correo = sc.nextLine();
+                    } while (!correo.matches(".*@.*[.].*$") || (correo.length() < 1 || correo.length() > 50));
+                    try {
+                        bd.modProducto(idUsuario, menuModUsu, correo);
+                        System.out.println("Usuario modificado");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                    }
+                    break;
+                case "direccion":
+                    direccion = "";
+                    do {
+                        System.out.println("Introduce dirección");
+                        direccion = sc.nextLine();
+                    } while (direccion.length() < 1 || direccion.length() > 50);
+                    try {
+                        bd.modProducto(idUsuario, menuModUsu, direccion);
+                        System.out.println("Usuario modificado");
+                    } catch (ErrorBBDD ex) {
+                        System.out.println("Error -> " + ex);
+                    }
+                    break;
+                case "repartidor":
+                    boolean valRepartidor;
+                    repartidor = false;
+                    for (Usuario u : usuarios) {
+                        if (u.getIdUsuario().equalsIgnoreCase(idUsuario) && u.getTipo() == 'E') {
+                            do {
+                                valRepartidor = false;
+                                try {
+                                    System.out.println("¿Empleado repartidor? (true/false");
+                                    repartidor = sc.nextBoolean();
+                                    valRepartidor = true;
+                                } catch (InputMismatchException ex) {
+                                    valRepartidor = false;
+                                }
+                            } while (!valRepartidor);
+                            try {
+                                bd.modProducto(idUsuario, menuModUsu, Boolean.toString(repartidor));
+                                System.out.println("Usuario modificado");
+                            } catch (ErrorBBDD ex) {
+                                System.out.println("Error -> " + ex);
+                            }
+                        }
+                    }
+                    break;
+                case "stop":
+                    System.out.println("Menú cerrado");
+                    break;
+                default:
+                    break;
+            }
+        } while (!menuModUsu.equalsIgnoreCase("stop"));
+        return true;
+    }
+
+    /**
+     * Método que da de baja un usuario, validando que exista y que el usuario logeado tenga permisos para borrarlo
+     *
+     * @return true si se ha dado de baja el usuario con éxito
+     */
+    public static boolean deleteUsuario() {
+        boolean val;
+        String codProducto = null, idUsu;
+        Vector<Usuario> usuarios = new Vector<Usuario>();
+        try {
+            usuarios = bd.listadoUsuarios();
+        } catch (ErrorBBDD ex) {
+            System.out.println("Error -> " + ex);
+            return false;
+        }
+        for (Usuario u : usuarios) {
+            System.out.println(u.toString());
+        }
+        do {
+            val = false;
+            System.out.println("Introduce código del usuario a borrar");
+            idUsu = sc.nextLine();
+            for (Usuario u : usuarios) {
+                if (u.getIdUsuario().equalsIgnoreCase(idUsu)) {
+                    if ((usuLog.getTipo() == 'G' && u.getTipo() == 'E')
+                            || (usuLog.getTipo() == 'A' && (u.getTipo() == 'E' || u.getTipo() == 'G'))) {
+                        val = true;
+                    }
+                    break;
+                }
+            }
+        } while (!val);
+        try {
+            bd.deleteProducto(codProducto);
+            System.out.println("Empleado borrado");
+        } catch (ErrorBBDD ex) {
+            System.out.println("Error -> " + ex);
+            return false;
+        }
+        return true;
     }
 
 }
