@@ -427,124 +427,85 @@ public class ProyectoEntornos {
      * Menú de los gestores
      */
     public static void menuGestor() {
-        int menuGestor;
+        int menu;
         do {
             System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir empleado\n5. Modificar empleado\n6. Borrar empleado\n7. Listado modificaciones productos"
                     + "\n8. Salir");
-            menuGestor = sc.nextInt();
+            menu = sc.nextInt();
             sc.nextLine();
-            switch (menuGestor) {
-                case 1:
-                    if (addProducto()) {
-                        System.out.println("Producto añadido");
-                    }
-                    break;
-                case 2:
-                    if (modProducto()) {
-                        System.out.println("Producto modificado");
-                    }
-                    break;
-                case 3:
-                    if (deleteProducto()) {
-                        System.out.println("Producto borrado");
-                    }
-                    break;
-                case 4:
-                    if (addUsuario()) {
-                        System.out.println("Usuario añadido");
-                    }
-                    break;
-                case 5:
-                    if (modUsuario()) {
-                        System.out.println("Modificaciones aplicadas");
-                    }
-                    break;
-                case 6:
-                    if (deleteUsuario()) {
-                        System.out.println("Usuario borrado");
-                    }
-                    break;
-                case 7:
-                    Vector<ModProducto> modificaciones = new Vector<ModProducto>();
-                    try {
-                        modificaciones = bd.listadoModificaciones();
-                    } catch (ErrorBBDD ex) {
-                        System.out.println("Error -> " + ex);
-                        break;
-                    }
-                    for (ModProducto m : modificaciones) {
-                        System.out.println(m.toString());
-                    }
-                    break;
-                case 8:
-                    System.out.println("Menú cerrado");
-                    break;
-                default:
-                    break;
-            }
-        } while (menuGestor != 8);
+            opcionesGestorAdmin(menu);
+        } while (menu != 8);
     }
 
     /**
      * Menú de los administradores
      */
     public static void menuAdmin() {
-        int menuAdmin;
+        int menu;
         do {
             System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir usuario\n5. Modificar usuario\n6. Borrar usuario\n7. Listado modificaciones productos"
                     + "\n8. Salir");
-            menuAdmin = sc.nextInt();
+            menu = sc.nextInt();
             sc.nextLine();
-            switch (menuAdmin) {
-                case 1:
-                    if (addProducto()) {
-                        System.out.println("Producto añadido");
-                    }
+            opcionesGestorAdmin(menu);
+        } while (menu != 8);
+    }
+
+    /**
+     * Opciones del menú del gestor/administrador
+     *
+     * @param menu opción elegida por el gestor/administrador
+     */
+    public static void opcionesGestorAdmin(int menu) {
+        switch (menu) {
+            case 1:
+                if (addProducto()) {
+                    System.out.println("Producto añadido");
+                }
+                break;
+            case 2:
+                if (modProducto()) {
+                    System.out.println("Producto modificado");
+                }
+                break;
+            case 3:
+                if (deleteProducto()) {
+                    System.out.println("Producto borrado");
+                }
+                break;
+            case 4:
+                if (addUsuario()) {
+                    System.out.println("Usuario añadido");
+                }
+                break;
+            case 5:
+                if (modUsuario()) {
+                    System.out.println("Usuario modificado");
+                }
+                break;
+            case 6:
+                if (deleteUsuario()) {
+                    System.out.println("Usuario borrado");
+                }
+                break;
+            case 7:
+                Vector<ModProducto> modificaciones = new Vector<ModProducto>();
+                try {
+                    modificaciones = bd.listadoModificaciones();
+                } catch (ErrorBBDD ex) {
+                    System.out.println("Error -> " + ex);
                     break;
-                case 2:
-                    if (modProducto()) {
-                        System.out.println("Modificaciones aplicadas");
-                    }
-                    break;
-                case 3:
-                    if (deleteProducto()) {
-                        System.out.println("Producto borrado");
-                    }
-                    break;
-                case 4:
-                    if (addUsuario()) {
-                        System.out.println("Usuario añadido");
-                    }
-                    break;
-                case 5:
-                    if (modUsuario()) {
-                        System.out.println("Modificaciones aplicadas");
-                    }
-                    break;
-                case 6:
-                    if (deleteUsuario()) {
-                        System.out.println("Usuario borrado");
-                    }
-                    break;
-                case 7:
-                    Vector<ModProducto> modificaciones = new Vector<ModProducto>();
-                    try {
-                        modificaciones = bd.listadoModificaciones();
-                    } catch (ErrorBBDD ex) {
-                        System.out.println("Error -> " + ex);
-                        break;
-                    }
-                    for (ModProducto m : modificaciones) {
-                        System.out.println(m.toString());
-                    }
-                    break;
-                case 8:
-                    System.out.println("Menú cerrado");
-                    break;
-                default:
-                    break;
-            }
-        } while (menuAdmin != 8);
+                }
+                for (ModProducto m : modificaciones) {
+                    System.out.println(m.toString());
+                }
+                break;
+            case 8:
+                System.out.println("Menú cerrado");
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -873,8 +834,8 @@ public class ProyectoEntornos {
     }
 
     /**
-     * Método que modifica los atributos de un usuario de la base de datos comprobando si el usuario logeado puede modificar el usuario, preguntando 
-     * el atributo que se quieren modificar y validando los datos
+     * Método que modifica los atributos de un usuario de la base de datos comprobando si el usuario logeado puede modificar el usuario, 
+     * preguntando el atributo que se quieren modificar y validando los datos
      *
      * @return true si se ha modificado el usuario con éxito
      */
