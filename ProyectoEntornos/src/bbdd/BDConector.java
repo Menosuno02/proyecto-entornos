@@ -1,11 +1,11 @@
 /*
- * BD_Conector: Se encarga de abrir y cerrar la base de datos
+ * BDConector: Se encarga de abrir y cerrar la base de datos
  */
 package bbdd;
 
 import java.sql.*;
 
-public class BD_Conector {
+public class BDConector {
 
     private String base;
     private String usuario;
@@ -18,7 +18,7 @@ public class BD_Conector {
      *
      * @param bbdd nombre de la base de datos
      */
-    public BD_Conector(String bbdd) {
+    public BDConector(String bbdd) {
         base = bbdd;
         usuario = "root";
         pass = "";

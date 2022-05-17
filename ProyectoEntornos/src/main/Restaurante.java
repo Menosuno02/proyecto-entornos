@@ -1,4 +1,4 @@
-package proyectoentornos;
+package main;
 
 import bbdd.*;
 import clases.*;
@@ -11,9 +11,9 @@ import java.util.regex.*;
  *
  * @author administrador
  */
-public class ProyectoEntornos {
+public class Restaurante {
 
-    public static BD_Restaurante bd = new BD_Restaurante("restaurante");
+    public static BDRestaurante bd = new BDRestaurante("restaurante");
     public static Usuario usuLog = null;
     public static Scanner sc = new Scanner(System.in).useLocale(Locale.ENGLISH);
 

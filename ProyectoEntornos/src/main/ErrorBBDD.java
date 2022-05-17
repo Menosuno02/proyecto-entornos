@@ -1,4 +1,4 @@
-package proyectoentornos;
+package main;
 
 /**
  * Error al acceder a la base de datos

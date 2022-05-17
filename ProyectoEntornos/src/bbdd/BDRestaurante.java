@@ -1,16 +1,16 @@
 package bbdd;
 
+import main.ErrorBBDD;
 import clases.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import proyectoentornos.*;
 
 /**
  *
  * @author administrador
  */
-public class BD_Restaurante extends BD_Conector {
+public class BDRestaurante extends BDConector {
 
     private static Statement s;
     private static ResultSet reg;
@@ -20,7 +20,7 @@ public class BD_Restaurante extends BD_Conector {
      *
      * @param file nombre de la base de datos
      */
-    public BD_Restaurante(String file) {
+    public BDRestaurante(String file) {
         super(file);
     }
 

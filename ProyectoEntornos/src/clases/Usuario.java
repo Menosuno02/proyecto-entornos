@@ -2,11 +2,11 @@ package clases;
 
 import java.util.InputMismatchException;
 import java.util.Vector;
-import proyectoentornos.ErrorBBDD;
-import static proyectoentornos.ProyectoEntornos.bd;
-import static proyectoentornos.ProyectoEntornos.sc;
-import static proyectoentornos.ProyectoEntornos.usuLog;
-import static proyectoentornos.ProyectoEntornos.valClave;
+import main.ErrorBBDD;
+import static main.Restaurante.bd;
+import static main.Restaurante.sc;
+import static main.Restaurante.usuLog;
+import static main.Restaurante.valClave;
 
 /**
  *
