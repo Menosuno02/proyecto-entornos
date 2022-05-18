@@ -121,7 +121,7 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario{" + "idUsuario=" + idUsuario + ", dni=" + dni + ", tipo=" + tipo + ", nombreUsuario=" + nombreUsuario + ", clave=" + clave + ", correo=" + correo + ", nombreApellidos=" + nombreApellidos + ", direccion=" + direccion + '}';
+        return "Usuario{" + "idUsuario=" + idUsuario + ", dni=" + dni + ", tipo=" + tipo + ", nombreUsuario=" + nombreUsuario + ", correo=" + correo + ", nombreApellidos=" + nombreApellidos + ", direccion=" + direccion + '}';
     }
 
     /**
@@ -202,6 +202,7 @@ public class Usuario {
         }
         try {
             bd.addUsuario(new Usuario(idUsu, dni, tipo.charAt(0), username, clave, correo, nombreApellidos, direccion), repartidor);
+            System.out.println("Usuario creado");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);
             return false;
@@ -359,7 +360,7 @@ public class Usuario {
         } while (!val);
         try {
             bd.deleteProducto(codProducto);
-            System.out.println("Empleado borrado");
+            System.out.println("Usuario borrado");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);
             return false;

@@ -81,6 +81,7 @@ public class ProductoCesta {
         sc.nextLine();
         try {
             bd.addProductoCesta(usuLog.getIdUsuario(), codProducto, cantidad);
+            System.out.println("Producto añadido");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);
             return false;
@@ -115,6 +116,7 @@ public class ProductoCesta {
         } while (!valProd);
         try {
             bd.quitarProductoCesta(usuLog.getIdUsuario(), codProducto);
+            System.out.println("Producto borrado");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);
             return false;

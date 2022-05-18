@@ -5,6 +5,8 @@ import clases.*;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -234,11 +236,11 @@ public class Restaurante {
         int menu;
         do {
             System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir empleado\n5. Modificar empleado\n6. Borrar empleado\n7. Listado modificaciones productos"
-                    + "\n8. Salir");
+                    + "\n8. Listado usuarios\n9. Salir");
             menu = sc.nextInt();
             sc.nextLine();
             opcionesGestorAdmin(menu);
-        } while (menu != 8);
+        } while (menu != 9);
     }
 
     /**
@@ -248,11 +250,11 @@ public class Restaurante {
         int menu;
         do {
             System.out.println("\n1. Añadir producto\n2. Modificar producto\n3. Borrar producto\n4. Añadir usuario\n5. Modificar usuario\n6. Borrar usuario\n7. Listado modificaciones productos"
-                    + "\n8. Salir");
+                    + "\n8. Listado usuarios\n9. Salir");
             menu = sc.nextInt();
             sc.nextLine();
             opcionesGestorAdmin(menu);
-        } while (menu != 8);
+        } while (menu != 9);
     }
 
     /**
@@ -305,6 +307,17 @@ public class Restaurante {
                 }
                 break;
             case 8:
+                Vector<Usuario> usuarios = new Vector<Usuario>();
+                try {
+                    usuarios = bd.listadoUsuarios();
+                } catch (ErrorBBDD ex) {
+                    System.out.println("Error -> " + ex);
+                }
+                for (Usuario u : usuarios) {
+                    System.out.println(u.toString());
+                }
+                break;
+            case 9:
                 System.out.println("Menú cerrado");
                 break;
             default:
