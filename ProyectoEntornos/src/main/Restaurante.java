@@ -5,7 +5,6 @@ import clases.*;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.regex.*;
 
 /**
  *
@@ -67,25 +66,6 @@ public class Restaurante {
                     break;
             }
         }
-    }
-
-    /**
-     * Método que comprueba si una contraseña: 
-     * - Tiene entre 6 y 30 caracteres 
-     * - Posee al menos un número, una minúscula, una mayúscula y un caracter especial 
-     * - No posee espacios
-     *
-     * @param clave la contraseña a validar
-     * @return true si la contraseña cumple la condición
-     */
-    public static boolean valClave(String clave) {
-        String regex = "^.*(?=.{6,30})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
-        Pattern p = Pattern.compile(regex);
-        if (clave == null) {
-            return false;
-        }
-        Matcher m = p.matcher(clave);
-        return m.matches();
     }
 
     /**

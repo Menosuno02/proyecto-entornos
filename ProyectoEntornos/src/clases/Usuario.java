@@ -2,11 +2,12 @@ package clases;
 
 import java.util.InputMismatchException;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import main.ErrorBBDD;
 import static main.Restaurante.bd;
 import static main.Restaurante.sc;
 import static main.Restaurante.usuLog;
-import static main.Restaurante.valClave;
 
 /**
  *
@@ -206,6 +207,25 @@ public class Usuario {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Método que comprueba si una contraseña: 
+     * - Tiene entre 6 y 30 caracteres 
+     * - Posee al menos un número, una minúscula, una mayúscula y un caracter especial 
+     * - No posee espacios
+     *
+     * @param clave la contraseña a validar
+     * @return true si la contraseña cumple la condición
+     */
+    public static boolean valClave(String clave) {
+        String regex = "^.*(?=.{6,30})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
+        Pattern p = Pattern.compile(regex);
+        if (clave == null) {
+            return false;
+        }
+        Matcher m = p.matcher(clave);
+        return m.matches();
     }
 
     /**
