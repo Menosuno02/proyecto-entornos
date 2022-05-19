@@ -202,7 +202,7 @@ public class Usuario {
         }
         try {
             bd.addUsuario(new Usuario(idUsu, dni, tipo.charAt(0), username, clave, correo, nombreApellidos, direccion), repartidor);
-            System.out.println("Usuario creado");
+            System.out.println("Usuario añadido");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);
             return false;

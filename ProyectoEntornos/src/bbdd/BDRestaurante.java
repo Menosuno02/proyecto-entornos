@@ -106,11 +106,12 @@ public class BDRestaurante extends BDConector {
             } else {
                 ps.setInt(9, 0);
             }
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
         } catch (SQLException e) {
+            System.out.println(e);
             throw new ErrorBBDD("No se pudo dar de alta del usuario");
         }
     }
@@ -157,7 +158,7 @@ public class BDRestaurante extends BDConector {
             ps.setString(1, idCliente);
             ps.setString(2, codProducto);
             ps.setInt(3, cantidad);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -207,7 +208,7 @@ public class BDRestaurante extends BDConector {
             ps = c.prepareStatement(sql);
             ps.setString(1, idCliente);
             ps.setString(2, codProducto);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -284,7 +285,7 @@ public class BDRestaurante extends BDConector {
             ps.setInt(2, t.getCcv());
             ps.setString(3, t.getFechaCaducidad());
             ps.setString(4, idCliente);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -389,7 +390,7 @@ public class BDRestaurante extends BDConector {
             ps.setString(3, codProducto);
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(minPrep + r.nextInt(11))));
             ps.setInt(5, cantidad);
-            ps.executeUpdate(sql3);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return precio;
@@ -439,7 +440,7 @@ public class BDRestaurante extends BDConector {
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(LocalDateTime.now()));
             ps.setTimestamp(5, java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(minPrep + r.nextInt(21))));
             ps.setDouble(6, importeTotal);
-            ps.executeUpdate(sql3);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -541,7 +542,7 @@ public class BDRestaurante extends BDConector {
             ps.setString(4, p.getAlergenos());
             ps.setDouble(5, p.getPrecio());
             ps.setInt(6, p.getMinPrep());
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -571,7 +572,7 @@ public class BDRestaurante extends BDConector {
             ps.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
             ps.setString(4, accion);
             ps.setString(5, descripcion);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -610,7 +611,7 @@ public class BDRestaurante extends BDConector {
                 ps.setString(1, valor);
             }
             ps.setString(2, codProducto);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -633,7 +634,7 @@ public class BDRestaurante extends BDConector {
             this.abrir();
             ps = c.prepareStatement(sql);
             ps.setString(1, codProducto);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -671,7 +672,7 @@ public class BDRestaurante extends BDConector {
                 ps.setString(1, valor);
             }
             ps.setString(2, idUsuario);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;
@@ -694,7 +695,7 @@ public class BDRestaurante extends BDConector {
             this.abrir();
             ps = c.prepareStatement(sql);
             ps.setString(1, idUsu);
-            ps.executeUpdate(sql);
+            ps.executeUpdate();
             ps.close();
             this.cerrar();
             return true;

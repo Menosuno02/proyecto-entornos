@@ -123,7 +123,7 @@ public class Pedido {
         }
         try {
             bd.addPedido(usuLog.getIdUsuario(), importeTotal, codPedido);
-            System.out.println("Pedido realizado");
+            System.out.println("Pedido tramitado y realizado");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);
             return false;

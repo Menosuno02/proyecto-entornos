@@ -27,9 +27,7 @@ public class Restaurante {
         do {
             switch (menúInicio) {
                 case 1:
-                    if (Usuario.addUsuario()) {
-                        System.out.println("Usuario añadido");
-                    }
+                    Usuario.addUsuario();
                     break;
                 case 2:
                     if (iniciarSesion()) {
@@ -130,22 +128,16 @@ public class Restaurante {
                     }
                     break;
                 case 2:
-                    if (ProductoCesta.addProductoCesta()) {
-                        System.out.println("Producto añadido a cesta");
-                    }
+                    ProductoCesta.addProductoCesta();
                     break;
                 case 3:
-                    if (ProductoCesta.deleteProductoCesta()) {
-                        System.out.println("Producto quitado de cesta");
-                    }
+                    ProductoCesta.deleteProductoCesta();
                     break;
                 case 4:
                     listarProductosCesta();
                     break;
                 case 5:
-                    if (Pedido.tramitarPedido()) {
-                        System.out.println("Pedido creado");
-                    }
+                    Pedido.tramitarPedido();
                     break;
                 case 6:
                     System.out.println("Menú cerrado");
@@ -263,34 +255,22 @@ public class Restaurante {
     public static void opcionesGestorAdmin(int opcion) {
         switch (opcion) {
             case 1:
-                if (Producto.addProducto()) {
-                    System.out.println("Producto añadido");
-                }
+                Producto.addProducto();
                 break;
             case 2:
-                if (Producto.modProducto()) {
-                    System.out.println("Producto modificado");
-                }
+                Producto.modProducto();
                 break;
             case 3:
-                if (Producto.deleteProducto()) {
-                    System.out.println("Producto borrado");
-                }
+                Producto.deleteProducto();
                 break;
             case 4:
-                if (Usuario.addUsuario()) {
-                    System.out.println("Usuario añadido");
-                }
+                Usuario.addUsuario();
                 break;
             case 5:
-                if (Usuario.modUsuario()) {
-                    System.out.println("Usuario modificado");
-                }
+                Usuario.modUsuario();
                 break;
             case 6:
-                if (Usuario.deleteUsuario()) {
-                    System.out.println("Usuario borrado");
-                }
+                Usuario.deleteUsuario();
                 break;
             case 7:
                 Vector<ModProducto> modificaciones = new Vector<ModProducto>();
