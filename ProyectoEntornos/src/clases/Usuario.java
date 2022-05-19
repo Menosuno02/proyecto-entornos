@@ -133,7 +133,7 @@ public class Usuario {
     public static boolean addUsuario() {
         String username, clave, dni, correo, nombreApellidos, direccion, idUsu, tipo = null;
         boolean usuExiste, repartidor = false, val;
-        Vector<Usuario> usuarios;
+        Vector<Usuario> usuarios = new Vector<Usuario>();
         do {
             System.out.println("Introduce DNI");
             dni = sc.nextLine();

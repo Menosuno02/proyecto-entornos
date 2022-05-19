@@ -5,8 +5,6 @@ import clases.*;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -78,7 +76,7 @@ public class Restaurante {
     public static boolean iniciarSesion() {
         String username, clave;
         boolean usuCon;
-        Vector<Usuario> usuarios;
+        Vector<Usuario> usuarios = new Vector<Usuario>();
         do {
             usuCon = false;
             System.out.println("Introduce nombre usuario (username)");
