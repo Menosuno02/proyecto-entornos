@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author hiper
+ * @author administrador
  */
 public class ModProducto {
 

@@ -220,7 +220,7 @@ public class Usuario {
      * @return true si la contraseña cumple la condición
      */
     public static boolean valClave(String clave) {
-        String regex = "^.*(?=.{6,30})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
+        String regex = "^.*(?=.{6,30})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+-_=!]).*$";
         Pattern p = Pattern.compile(regex);
         if (clave == null) {
             return false;

@@ -21,10 +21,10 @@ public class Restaurante {
      */
     public static void main(String[] args) {
         int menúInicio;
-        System.out.println("\n1. Crear usuario\n2. Iniciar sesión\n3. Salir");
-        menúInicio = sc.nextInt();
-        sc.nextLine();
         do {
+            System.out.println("\n1. Crear usuario\n2. Iniciar sesión\n3. Salir");
+            menúInicio = sc.nextInt();
+            sc.nextLine();
             switch (menúInicio) {
                 case 1:
                     Usuario.addUsuario();
@@ -47,7 +47,11 @@ public class Restaurante {
         if (menúInicio == 3) {
             System.exit(0);
         } else {
-            switch (usuLog.getTipo()) {
+            char tipo = 'N';
+            if (usuLog != null) {
+                tipo = usuLog.getTipo();
+            }
+            switch (tipo) {
                 case 'C':
                     menuCliente();
                     break;
@@ -61,6 +65,7 @@ public class Restaurante {
                     menuAdmin();
                     break;
                 default:
+                    System.out.println("Cerrando aplicación");
                     break;
             }
         }
