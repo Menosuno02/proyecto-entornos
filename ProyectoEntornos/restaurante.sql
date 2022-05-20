@@ -178,7 +178,7 @@ CREATE TABLE `usuarios` (
   `correo` varchar(50) NOT NULL COMMENT 'Correo electrónico del usuario',
   `nombreApellidos` varchar(50) NOT NULL COMMENT 'Nombre y apellidos del usuario',
   `direccion` varchar(50) NOT NULL COMMENT 'Dirección del usuario',
-  `repartidor` tinyint(1) DEFAULT NULL COMMENT '0 si el usuario no es empleado o si el empleado no puede ejercer de repartidor y 1 si el empleado puede ejercer de repartidor'
+  `repartidor` tinyint(1) NOT NULL COMMENT '0 si el usuario no es empleado o si el empleado no puede ejercer de repartidor y 1 si el empleado puede ejercer de repartidor'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
