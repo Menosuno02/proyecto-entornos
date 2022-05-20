@@ -118,7 +118,6 @@ public class Producto {
                 break;
             } else if (ingrediente.length() + ingredientes.length() > 200) {
                 System.out.println("No se pudo añadir ingrediente (supera límite de caracteres)");
-                ingrediente = "STOP";
                 break;
             } else if (ingredientes.length() == 0) {
                 ingredientes = ingrediente;
@@ -134,7 +133,6 @@ public class Producto {
                 break;
             } else if (alergeno.length() + alergenos.length() > 100) {
                 System.out.println("No se pudo añadir alergeno (supera límite de caracteres)");
-                alergeno = "STOP";
                 break;
             } else if (alergenos.length() == 0) {
                 alergenos = alergeno;
