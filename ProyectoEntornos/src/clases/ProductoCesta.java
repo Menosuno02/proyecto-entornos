@@ -8,7 +8,7 @@ import static main.Restaurante.usuLog;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class ProductoCesta {
 
@@ -31,7 +31,7 @@ public class ProductoCesta {
 
     @Override
     public String toString() {
-        return "ProductoCesta{" + "idCliente=" + idCliente + ", codProducto=" + codProducto + ", cantidad=" + cantidad + '}';
+        return "idCliente=" + idCliente + ", codProducto=" + codProducto + ", cantidad=" + cantidad;
     }
 
     /**

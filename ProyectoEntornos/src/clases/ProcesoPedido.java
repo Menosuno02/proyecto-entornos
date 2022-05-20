@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class ProcesoPedido {
 
@@ -33,7 +33,7 @@ public class ProcesoPedido {
 
     @Override
     public String toString() {
-        return "ProcesoPedido{" + "codPedido=" + codPedido + ", idEmple=" + idEmple + ", codProducto=" + codProducto + ", fechaPrep=" + fechaPrep + ", cantidad=" + cantidad + '}';
+        return "codPedido=" + codPedido + ", idEmple=" + idEmple + ", codProducto=" + codProducto + ", fechaPrep=" + fechaPrep + ", cantidad=" + cantidad;
     }
 
 }

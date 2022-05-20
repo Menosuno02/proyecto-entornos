@@ -11,7 +11,7 @@ import static main.Restaurante.usuLog;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class Usuario {
 
@@ -121,7 +121,7 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario{" + "idUsuario=" + idUsuario + ", dni=" + dni + ", tipo=" + tipo + ", nombreUsuario=" + nombreUsuario + ", correo=" + correo + ", nombreApellidos=" + nombreApellidos + ", direccion=" + direccion + '}';
+        return "idUsuario=" + idUsuario + ", dni=" + dni + ", tipo=" + tipo + ", nombreUsuario=" + nombreUsuario + ", correo=" + correo + ", nombreApellidos=" + nombreApellidos + ", direccion=" + direccion;
     }
 
     /**
@@ -186,7 +186,7 @@ public class Usuario {
             do {
                 val = false;
                 try {
-                    System.out.println("¿Empleado repartidor? (true/false");
+                    System.out.println("¿Empleado repartidor? (true/false)");
                     repartidor = sc.nextBoolean();
                     val = true;
                 } catch (InputMismatchException ex) {
@@ -273,7 +273,7 @@ public class Usuario {
                         correo = sc.nextLine();
                     } while (!correo.matches(".*@.*[.].*$") || (correo.length() < 1 || correo.length() > 50));
                     try {
-                        bd.modProducto(idUsuario, menuModUsu, correo);
+                        bd.modUsuario(idUsuario, menuModUsu, correo);
                         System.out.println("Usuario modificado");
                     } catch (ErrorBBDD ex) {
                         System.out.println("Error -> " + ex);
@@ -286,7 +286,7 @@ public class Usuario {
                         direccion = sc.nextLine();
                     } while (direccion.length() < 1 || direccion.length() > 50);
                     try {
-                        bd.modProducto(idUsuario, menuModUsu, direccion);
+                        bd.modUsuario(idUsuario, menuModUsu, direccion);
                         System.out.println("Usuario modificado");
                     } catch (ErrorBBDD ex) {
                         System.out.println("Error -> " + ex);
@@ -300,7 +300,7 @@ public class Usuario {
                             do {
                                 valRepartidor = false;
                                 try {
-                                    System.out.println("¿Empleado repartidor? (true/false");
+                                    System.out.println("¿Empleado repartidor? (true/false)");
                                     repartidor = sc.nextBoolean();
                                     valRepartidor = true;
                                 } catch (InputMismatchException ex) {
@@ -308,7 +308,7 @@ public class Usuario {
                                 }
                             } while (!valRepartidor);
                             try {
-                                bd.modProducto(idUsuario, menuModUsu, Boolean.toString(repartidor));
+                                bd.modUsuario(idUsuario, menuModUsu, Boolean.toString(repartidor));
                                 System.out.println("Usuario modificado");
                             } catch (ErrorBBDD ex) {
                                 System.out.println("Error -> " + ex);
@@ -333,7 +333,7 @@ public class Usuario {
      */
     public static boolean deleteUsuario() {
         boolean val;
-        String codProducto = null, idUsu;
+        String idUsu = null;
         Vector<Usuario> usuarios = new Vector<Usuario>();
         try {
             usuarios = bd.listadoUsuarios();
@@ -359,7 +359,7 @@ public class Usuario {
             }
         } while (!val);
         try {
-            bd.deleteProducto(codProducto);
+            bd.deleteUsuario(idUsu);
             System.out.println("Usuario borrado");
         } catch (ErrorBBDD ex) {
             System.out.println("Error -> " + ex);

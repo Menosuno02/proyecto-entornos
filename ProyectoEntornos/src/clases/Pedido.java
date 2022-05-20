@@ -13,7 +13,7 @@ import static main.Restaurante.usuLog;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class Pedido {
 
@@ -45,7 +45,7 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return "Pedido{" + "codPedido=" + codPedido + ", idCliente=" + idCliente + ", idRepartidor=" + idRepartidor + ", fechaAlta=" + fechaAlta + ", fechaEntrega=" + fechaEntrega + ", precio=" + precio + '}';
+        return "codPedido=" + codPedido + ", idCliente=" + idCliente + ", idRepartidor=" + idRepartidor + ", fechaAlta=" + fechaAlta + ", fechaEntrega=" + fechaEntrega + ", precio=" + precio;
     }
 
     /**
@@ -57,10 +57,9 @@ public class Pedido {
         int cantidad, ccv;
         double importe = 0, importeTotal = 0;
         String numTarjeta, fechaExp, codPedido = null;
-        Tarjeta tarjeta;
+        Tarjeta tarjeta = null;
         Vector<String> productosCesta = new Vector<String>();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("MM/yy");
-        tarjeta = null;
         try {
             tarjeta = bd.buscarTarjeta(usuLog.getIdUsuario());
         } catch (ErrorBBDD ex) {
@@ -102,7 +101,6 @@ public class Pedido {
                 return false;
             }
         }
-        ((Cliente) usuLog).setTarjeta(tarjeta);
         try {
             codPedido = bd.getCodPedido();
         } catch (ErrorBBDD ex) {

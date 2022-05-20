@@ -1,5 +1,6 @@
 package clases;
 
+import java.util.Collections;
 import java.util.Vector;
 import main.ErrorBBDD;
 import static main.Restaurante.bd;
@@ -8,7 +9,7 @@ import static main.Restaurante.usuLog;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class Producto {
 
@@ -94,7 +95,7 @@ public class Producto {
 
     @Override
     public String toString() {
-        return "Producto{" + "codProducto=" + codProducto + ", nomProducto=" + nomProducto + ", ingredientes=" + ingredientes + ", alergenos=" + alergenos + ", precio=" + precio + ", minPrep=" + minPrep + '}';
+        return "codProducto=" + codProducto + ", nomProducto=" + nomProducto + ", ingredientes=" + ingredientes + ", alergenos=" + alergenos + ", precio=" + precio + ", minPrep=" + minPrep;
     }
 
     /**
@@ -122,7 +123,7 @@ public class Producto {
             } else if (ingredientes.length() == 0) {
                 ingredientes = ingrediente;
             } else {
-                ingredientes = ingredientes + ingrediente;
+                ingredientes = ingredientes + "," + ingrediente;
             }
         } while (!ingrediente.equalsIgnoreCase("STOP"));
         alergenos = "";
@@ -138,7 +139,7 @@ public class Producto {
             } else if (alergenos.length() == 0) {
                 alergenos = alergeno;
             } else {
-                alergenos = alergenos + alergeno;
+                alergenos = alergenos + "," + alergeno;
             }
         } while (!alergeno.equalsIgnoreCase("STOP"));
         do {
@@ -223,7 +224,7 @@ public class Producto {
                         } else if (ingredientes.length() == 0) {
                             ingredientes = ingrediente;
                         } else {
-                            ingredientes = ingredientes + ingrediente;
+                            ingredientes = ingredientes + "," + ingrediente;
                         }
                     } while (!ingrediente.equalsIgnoreCase("STOP"));
                     try {
@@ -247,7 +248,7 @@ public class Producto {
                         } else if (alergenos.length() == 0) {
                             alergenos = alergeno;
                         } else {
-                            alergenos = alergenos + alergeno;
+                            alergenos = alergenos + "," + alergeno;
                         }
                     } while (!alergeno.equalsIgnoreCase("STOP"));
                     try {
@@ -264,6 +265,7 @@ public class Producto {
                         System.out.println("Introduce precio");
                         precio = sc.nextDouble();
                     } while (precio < 0.01 || precio > 99.99);
+                    sc.nextLine();
                     try {
                         bd.modProducto(codProducto, menuModProd, Double.toString(precio));
                         bd.addModProducto(usuLog.getIdUsuario(), codProducto, "Modificación del precio del producto " + codProducto, "Nuevo precio: " + precio);
@@ -312,6 +314,7 @@ public class Producto {
             System.out.println("Error -> " + ex);
             return false;
         }
+        Collections.sort(productos, new ProductoSort());
         for (Producto p : productos) {
             System.out.println(p.toString());
         }

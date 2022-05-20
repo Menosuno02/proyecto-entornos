@@ -2,7 +2,7 @@ package clases;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class Empleado extends Usuario {
 
@@ -37,7 +37,7 @@ public class Empleado extends Usuario {
 
     @Override
     public String toString() {
-        return "Empleado{" + super.toString() + ",repartidor=" + repartidor + '}';
+        return super.toString() + ", repartidor=" + repartidor;
     }
 
 }

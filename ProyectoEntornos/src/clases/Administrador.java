@@ -2,7 +2,7 @@ package clases;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class Administrador extends Usuario {
 

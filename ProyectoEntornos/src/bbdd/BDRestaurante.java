@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class BDRestaurante extends BDConector {
 
@@ -101,7 +101,7 @@ public class BDRestaurante extends BDConector {
             ps.setString(6, u.getCorreo());
             ps.setString(7, u.getNombreApellidos());
             ps.setString(8, u.getDireccion());
-            if (u instanceof Empleado) {
+            if (u.getTipo() == 'E') {
                 ps.setInt(9, (repartidor ? 1 : 0));
             } else {
                 ps.setInt(9, 0);
@@ -110,8 +110,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
-            System.out.println(e);
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo dar de alta del usuario");
         }
     }
@@ -162,7 +161,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo añadir el producto a la cesta ");
         }
     }
@@ -202,7 +201,7 @@ public class BDRestaurante extends BDConector {
      */
     public boolean quitarProductoCesta(String idCliente, String codProducto) throws ErrorBBDD {
         PreparedStatement ps;
-        String sql = "DELETE productosCesta WHERE idCliente = ? AND codProducto = ?";
+        String sql = "DELETE FROM productosCesta WHERE idCliente = ? AND codProducto = ?";
         try {
             this.abrir();
             ps = c.prepareStatement(sql);
@@ -212,7 +211,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo borrar el producto de la cesta");
         }
     }
@@ -289,7 +288,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo añadir la tarjeta");
         }
     }
@@ -369,20 +368,19 @@ public class BDRestaurante extends BDConector {
         String sql = "SELECT * FROM usuarios WHERE tipo = 'E'";
         String sql2 = "SELECT * FROM productos WHERE codProducto = '" + codProducto + "'";
         try {
+            this.abrir();
             s = c.createStatement();
             reg = s.executeQuery(sql);
             while (reg.next()) {
                 empleados.add(reg.getString("idUsuario"));
             }
             idEmple = empleados.get(r.nextInt(empleados.size()));
-            s = c.createStatement();
             reg = s.executeQuery(sql2);
             while (reg.next()) {
                 minPrep = reg.getInt("minPrep");
                 precio = reg.getDouble("precio");
             }
             precio = precio * cantidad;
-            s.close();
             String sql3 = "INSERT INTO procesosPedido VALUES(?,?,?,?,?)";
             ps = c.prepareStatement(sql3);
             ps.setString(1, codPedido);
@@ -391,6 +389,7 @@ public class BDRestaurante extends BDConector {
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(minPrep + r.nextInt(11))));
             ps.setInt(5, cantidad);
             ps.executeUpdate();
+            s.close();
             ps.close();
             this.cerrar();
             return precio;
@@ -431,7 +430,6 @@ public class BDRestaurante extends BDConector {
             while (reg.next()) {
                 minPrep = reg.getInt("max");
             }
-            s.close();
             String sql3 = "INSERT INTO pedidos VALUES (?,?,?,?,?,?)";
             ps = c.prepareStatement(sql3);
             ps.setString(1, codPedido);
@@ -441,10 +439,11 @@ public class BDRestaurante extends BDConector {
             ps.setTimestamp(5, java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(minPrep + r.nextInt(21))));
             ps.setDouble(6, importeTotal);
             ps.executeUpdate();
+            s.close();
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo añadir el pedido");
         }
     }
@@ -457,7 +456,7 @@ public class BDRestaurante extends BDConector {
      */
     public Vector<ProcesoPedido> listadoProcesosPedidos() throws ErrorBBDD {
         Vector<ProcesoPedido> procesos = new Vector<ProcesoPedido>();
-        String sql = "SELECT * FROM procesosPedidos";
+        String sql = "SELECT * FROM procesosPedido";
         try {
             this.abrir();
             s = c.createStatement();
@@ -546,7 +545,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo dar de alta del producto");
         }
     }
@@ -576,7 +575,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo dar de alta la modificación del producto");
         }
     }
@@ -615,7 +614,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo modificar el producto");
         }
     }
@@ -629,7 +628,7 @@ public class BDRestaurante extends BDConector {
      */
     public boolean deleteProducto(String codProducto) throws ErrorBBDD {
         PreparedStatement ps;
-        String sql = "DELETE productos WHERE codProducto = ?";
+        String sql = "DELETE FROM productos WHERE codProducto = ?";
         try {
             this.abrir();
             ps = c.prepareStatement(sql);
@@ -638,7 +637,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo borrar el producto");
         }
     }
@@ -676,7 +675,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo modificar el usuario");
         }
     }
@@ -690,7 +689,7 @@ public class BDRestaurante extends BDConector {
      */
     public boolean deleteUsuario(String idUsu) throws ErrorBBDD {
         PreparedStatement ps;
-        String sql = "DELETE usuarios where idUsuario = ?";
+        String sql = "DELETE FROM usuarios where idUsuario = ?";
         try {
             this.abrir();
             ps = c.prepareStatement(sql);
@@ -699,7 +698,7 @@ public class BDRestaurante extends BDConector {
             ps.close();
             this.cerrar();
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
             throw new ErrorBBDD("No se pudo borrar el usuario");
         }
     }

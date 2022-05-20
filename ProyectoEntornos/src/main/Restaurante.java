@@ -2,13 +2,14 @@ package main;
 
 import bbdd.*;
 import clases.*;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
 
 /**
  *
- * @author administrador
+ * @author Alejandro López, Sergio Gago, Marcos Madrid, Alberto Mayo
  */
 public class Restaurante {
 
@@ -128,8 +129,9 @@ public class Restaurante {
             }
             switch (menuCliente) {
                 case 1:
+                    Collections.sort(productos, new ProductoSort());
                     for (Producto p : productos) {
-                        p.toString();
+                        System.out.println(p.toString());
                     }
                     break;
                 case 2:
@@ -189,8 +191,9 @@ public class Restaurante {
                         System.out.println("Error -> " + ex);
                         break;
                     }
+                    Collections.sort(productos, new ProductoSort());
                     for (Producto p : productos) {
-                        p.toString();
+                        System.out.println(p.toString());
                     }
                     break;
                 case 2:
@@ -201,7 +204,7 @@ public class Restaurante {
                         break;
                     }
                     for (ProcesoPedido pp : procesos) {
-                        pp.toString();
+                        System.out.println(pp.toString());
                     }
                     break;
                 case 3:
@@ -211,8 +214,8 @@ public class Restaurante {
                         System.out.println("Error -> " + ex);
                         break;
                     }
-                    for (Pedido p : pedidos) {
-                        p.toString();
+                    for (Pedido pe : pedidos) {
+                        System.out.println(pe.toString());
                     }
                     break;
                 case 4:
